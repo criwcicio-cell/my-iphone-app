@@ -1,6 +1,6 @@
 {
-  "name": "My App",
-  "short_name": "My App",
+  "name": "Criw Cicio",
+  "short_name": "Criw Cicio",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
