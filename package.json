@@ -1,0 +1,28 @@
+{
+  "name": "my-iphone-app",
+  "version": "1.0.0",
+  "description": "My Personal iPhone and iPad app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/criwcicio-cell/my-iphone-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/criwcicio-cell/my-iphone-app/issues"
+  },
+  "homepage": "https://github.com/criwcicio-cell/my-iphone-app#readme",
+  "dependencies": {
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/ios": "^8.6.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.2"
+  }
+}
