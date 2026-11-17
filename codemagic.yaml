@@ -1,12 +1,19 @@
+
 workflows:
   criw-cicio-ios:
     name: Criw Cicio iOS Build
     max_build_duration: 60
     instance_type: mac_mini_m2
 
+    integrations:
+      app_store_connect: Codemagic Criw Cicio
+
     environment:
       node: v22.11.0
       xcode: latest
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: uk.co.criwcicio.app
 
     scripts:
       - name: Install dependencies
@@ -15,16 +22,12 @@ workflows:
       - name: Synchronise Capacitor
         script: npx cap sync ios
 
-      - name: Build iPhone app
-        script: |
-          xcodebuild \
-            -project ios/App/App.xcodeproj \
-            -scheme App \
-            -configuration Release \
-            -destination 'generic/platform=iOS' \
-            CODE_SIGNING_ALLOWED=NO \
-            build
+      - name: Set up code signing
+        script: xcode-project use-profiles
+
+      - name: Build signed iOS app
+        script: xcode-project build-ipa --project ios/App/App.xcodeproj --scheme App
 
     artifacts:
-      - /Users/builder/Library/Developer/Xcode/DerivedData/**/Build/Products/Release-iphoneos/*.app
+      - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
