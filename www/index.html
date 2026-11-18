@@ -7262,7 +7262,7 @@ function bgmStep(a,T,k,t){
   const m=T.mel[bar][i];
   if(m&&!(((k>>6)%4===3)&&bar<2))bgmInst(a,K.lead,T.hz(m.n),t,s*m.len*(K.stacc?.6:.92),K.calm?.05:K.lead==='brass'||K.lead==='saw'?.045:.05);
 }
-function bgmStart(alive,id,level){const a=audio();if(!a)return;if(BGM.on)bgmStop(true);BGM.on=true;BGM.alive=alive;BGM.step=0;BGM.hush=false;BGM.level=level||.5;BGM.tune=bgmMake(id);BGM.next=a.currentTime+.1;
+function bgmStart(alive,id,level){const a=audio();if(!a)return;if(BGM.on)bgmStop(true);BGM.scr=null;BGM.on=true;BGM.alive=alive;BGM.step=0;BGM.hush=false;BGM.level=level||.5;BGM.tune=bgmMake(id);BGM.next=a.currentTime+.1;
   BGM.master=a.createGain();BGM.master.gain.value=0;BGM.master.connect(a.destination);BGM.master.gain.linearRampToValueAtTime(BGM.level,a.currentTime+1.5);
   BGM.timer=setInterval(()=>{const a2=audio();if(!a2||!BGM.alive()){bgmStop();return;}
     const T=BGM.tune,talking=(()=>{try{return speechSynthesis.speaking||(typeof cySrc!=='undefined'&&!!cySrc);}catch(e){return false;}})();
@@ -7273,6 +7273,20 @@ function bgmStart(alive,id,level){const a=audio();if(!a)return;if(BGM.on)bgmStop
   },50);}
 function bgmHush(on){BGM.hush=!!on;}
 function bgmStop(quick){if(!BGM.on)return;BGM.on=false;BGM.hush=false;clearInterval(BGM.timer);BGM.timer=null;try{const a=audio(),m=BGM.master;if(a&&m){m.gain.cancelScheduledValues(a.currentTime);m.gain.setTargetAtTime(.0001,a.currentTime,quick?.03:.2);setTimeout(()=>{try{m.disconnect();}catch(e){}},quick?300:1500);}else if(m)m.disconnect();}catch(e){}}
+/* menu and instruction-page music: one gentle tune runs through the home screen and both game menus
+   (it carries on as you move between them), and each game's instruction page plays a quieter version of
+   that game's own tune. It stops on the game itself, which has its own music, and follows the Sound button. */
+BGM_FIXED['menu']='marimba';
+function bgmScreen(){
+  if(document.hidden||!saved.sound)return '';
+  const z=document.getElementById('zone'),zi=document.getElementById('zIntro');
+  if(!z||z.hidden)return 'menu';
+  if(zi&&!zi.hidden&&typeof G!=='undefined'&&G)return 'intro:'+G.id;
+  return '';}
+setInterval(()=>{const w=bgmScreen();if(!w)return;
+  if(BGM.on&&(BGM.scr===w||!BGM.scr))return; /* already playing it, or a game's own music is playing */
+  const a=audio();if(!a||a.state!=='running')return;
+  bgmStart(()=>bgmScreen()===w,w==='menu'?'menu':w.slice(6),w==='menu'?.42:.38);BGM.scr=w;},400);
 function musicTick(k){
   if(!audio())return;
   if(k%4===0)tone(120,0,.18,'sine',.3,50);
