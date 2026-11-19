@@ -1928,6 +1928,9 @@ html[lang="cy"] #hearHow{display:none}
 .pay-banner svg{width:22px;height:22px;flex:none}
 .pay-banner:active{transform:translateY(2px);box-shadow:0 2px 0 var(--deep)}
 #paySheet{z-index:85}
+html #paySheet{align-items:center!important;justify-content:center;padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+html #paySheet .sheet{border-radius:28px;max-height:calc(100% - 32px)}
+.filters[hidden]{display:none!important}
 .sheet.pay .btn:disabled{opacity:.6}
 .pay-msg{min-height:1.3em;text-align:center;font-weight:700;color:var(--ink)}
 .pay-note{text-align:center;font-size:.85rem;color:var(--muted)}
@@ -5030,7 +5033,7 @@ html.mv-full #zStage .mv-wrap.pn-strip .mv-panel #mvCards button,html.mv-full #z
     <section class="wrap sec" id="games">
         <div class="sec-head"><div class="games-title"><button class="back-home" data-go="welcome" data-ta="back_welcome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 data-t="all_h"></h2></div><p id="gameCount"></p></div>
         <div class="pagetabs" role="group"><button data-go="games" data-tab aria-pressed="false"><span data-t="tab_learn"></span></button><button data-go="moves" data-tab aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="4.5" r="2"/><path d="M9 21l2.5-6 3 2.5V22M7 12l3-3.5 4 1.5 2.5 3.5 2.5.5M11.5 15 10 9"/></svg><span data-t="tab_move"></span></button></div>
-        <div class="filters" id="filters"></div>
+        <div class="filters" id="filters" hidden></div>
         <div class="grid" id="allGrid"></div>
       </section>
   <footer>
@@ -5182,7 +5185,7 @@ en:{
   sound_on_aria:`Sound is on. Tap to turn off.`, sound_off_aria:`Sound is off. Tap to turn on.`, sound_said:`Sound on!`,
   hero_h1:`Fun little games.<br><em>Big little learners.</em>`,
   lede:`Learning games for children, with a football or rugby twist in every one.`, lede2:`Made by Criw Cicio, the family-run club for little kickers.`,
-  start:`Educational games`, site_btn:`Our website`, voice_btn:`Voice`, moves_btn:`Physical Games`, tab_learn:`Learning games`, tab_move:`Physical games`, moves_h:`Physical Games`, moves_p:`Get up and move! Clear a space, watch the coach and copy the moves.`, stickers_h:`Your sticker book`, stickers_p:`Finish a game to win its sticker.`, back_welcome:`Back to the start`, add_phone:`Add to iPhone home screen`, add_phone_short:`Add to phone`, add_phone_btn:`Add to phone`,
+  start:`Educational games`, site_btn:`Classes & Parties`, voice_btn:`Voice`, moves_btn:`Physical Games`, tab_learn:`Learning games`, tab_move:`Physical games`, moves_h:`Physical Games`, moves_p:`Get up and move! Clear a space, watch the coach and copy the moves.`, stickers_h:`Your sticker book`, stickers_p:`Finish a game to win its sticker.`, back_welcome:`Back to the start`, add_phone:`Add to iPhone home screen`, add_phone_short:`Add to phone`, add_phone_btn:`Add to phone`,
   bubble:`Shwmae!<br>Let's play!`,
   learners_h:`Who's playing today?`, learners_p:`Pick a learner to see the best games for them.`,
   topics_h:`Explore by topic`, all_h:`All games`, count:`{a} of {b} games`,
@@ -5246,7 +5249,7 @@ cy:{
   sound_on_aria:`Mae'r sain ymlaen. Tapiwch i'w diffodd.`, sound_off_aria:`Mae'r sain i ffwrdd. Tapiwch i'w throi ymlaen.`, sound_said:`Sain ymlaen!`,
   hero_h1:`Gemau hwyliog.<br><em>Dysgwyr bach, camau mawr.</em>`,
   lede:`Gemau dysgu i blant.`, lede2:`Wedi'u creu gan Griw Cicio.`,
-  start:`Gemau addysgiadol`, site_btn:`Ein gwefan`, voice_btn:`Llais`, moves_btn:`Gemau Symud`, tab_learn:`Gemau dysgu`, tab_move:`Gemau symud`, moves_h:`Gemau Symud`, moves_p:`Coda a symuda! Cliria le, gwylia'r hyfforddwr a chopïa'r symudiadau.`, stickers_h:`Dy lyfr sticeri`, stickers_p:`Gorffen gêm i ennill ei sticer.`, back_welcome:`Yn ôl i'r dechrau`, add_phone:`Ychwanegu i'r iPhone`, add_phone_short:`I'r ffôn`, add_phone_btn:`Ychwanegu i'r ffôn`,
+  start:`Gemau addysgiadol`, site_btn:`Dosbarthiadau a Phartion`, voice_btn:`Llais`, moves_btn:`Gemau Symud`, tab_learn:`Gemau dysgu`, tab_move:`Gemau symud`, moves_h:`Gemau Symud`, moves_p:`Coda a symuda! Cliria le, gwylia'r hyfforddwr a chopïa'r symudiadau.`, stickers_h:`Dy lyfr sticeri`, stickers_p:`Gorffen gêm i ennill ei sticer.`, back_welcome:`Yn ôl i'r dechrau`, add_phone:`Ychwanegu i'r iPhone`, add_phone_short:`I'r ffôn`, add_phone_btn:`Ychwanegu i'r ffôn`,
   bubble:`Shwmae!<br>Dewch i chwarae!`,
   learners_h:`Pwy sy'n chwarae heddiw?`, learners_p:`Dewiswch ddysgwr i weld y gemau gorau iddyn nhw.`,
   topics_h:`Archwilio fesul pwnc`, all_h:`Pob gêm`, count:`{a} o {b} gêm`,
@@ -6679,11 +6682,6 @@ const GAMES=[
    short:{en:'Fun questions about numbers, colours, shapes and football.',cy:'Cwestiynau hwyliog am rifau, lliwiau, siapiau a phêl-droed.'},
    how:{en:['Listen to the question.','Look at the picture.','Tap the right answer.'],cy:["Gwranda ar y cwestiwn.","Edrycha ar y llun.","Tapia'r ateb cywir."]},
    art:()=>'<span class="glyph">?</span>'+football(), start:quizGame},
-  {id:'first-letters',cats:['letters'],diff:'medium',noCy:true, /* English only: hidden when the app is in Welsh */
-   title:{en:'First Letters',cy:'Llythrennau Cyntaf'},
-   short:{en:'Spot letters, find the letter a word starts with, and read first words.',cy:"Sylwi ar lythrennau, ffeindio llythyren gyntaf gair, a darllen geiriau cyntaf."},
-   how:{en:['Look at the picture.','Listen to the word.','Tap the letter (or word) that matches.'],cy:["Edrycha ar y llun.","Gwranda ar y gair.","Tapia'r llythyren (neu'r gair) sy'n cyfateb."]},
-   art:()=>'<span class="glyph">Bb</span>'+football(), start:lettersGame},
   {id:'kit-designer',cats:['creative','football'],diff:'easy',free:true,
    title:{en:'Kit Designer',cy:'Dylunio Cit'},
    short:{en:'Copy the coach\'s kit, or design your own.',cy:'Copïa git yr hyfforddwr, neu dylunia dy un dy hun.'},
@@ -6736,21 +6734,6 @@ const GAMES=[
    short:{en:'Match each picture to its shadow.',cy:"Paria bob llun gyda'i gysgod."},
    how:{en:['Look at the picture.','Find its shadow.','Tap the matching shadow.'],cy:["Edrycha ar y llun.","Ffeindia'i gysgod.","Tapia'r cysgod sy'n cyfateb."]},
    art:()=>emo('🏆')+'<span class="emo shadow">🏆</span>', start:shadowGame},
-  {id:'letter-kick',cats:['letters'],diff:'easy',
-   title:{en:'Letter Kick',cy:'Cic Llythrennau'},
-   short:{en:'Match capital and small letters.',cy:'Paru priflythrennau a llythrennau bach.'},
-   how:{en:['Look at the big letter.','Find its partner.','Tap it to kick!'],cy:["Edrycha ar y llythyren fawr.","Ffeindia'i phartner.","Tapia hi i gicio!"]},
-   art:()=>'<span class="glyph">Aa</span>'+football(), start:letterKickGame},
-  {id:'missing-letter',cats:['letters'],diff:'tricky',
-   title:{en:'Missing Letter',cy:'Llythyren Goll'},
-   short:{en:'Find the letter that fills the gap in the word.',cy:"Ffeindia'r llythyren sy'n llenwi'r bwlch yn y gair."},
-   how:{en:['Look at the picture.','Read the word with a gap.','Tap the missing letter.'],cy:["Edrycha ar y llun.","Darllena'r gair gyda bwlch.","Tapia'r llythyren goll."]},
-   art:()=>'<span class="glyph">b<u>?</u>ll</span>', start:missingLetterGame},
-  {id:'picture-sounds',cats:['letters'],diff:'medium',
-   title:{en:'Picture Sounds',cy:'Seiniau Lluniau'},
-   short:{en:'Which picture starts with the letter?',cy:"Pa lun sy'n dechrau gyda'r llythyren?"},
-   how:{en:['Look at the letter.','Say each picture out loud.','Tap the one that starts with that letter.'],cy:["Edrycha ar y llythyren.","Dweda enw pob llun yn uchel.","Tapia'r un sy'n dechrau gyda'r llythyren honno."]},
-   art:()=>'<span class="glyph">B</span>'+emo('⚽'), start:picSoundGame},
   {id:'whats-missing',cats:['memory'],diff:'medium',
    title:{en:"What's Missing?",cy:'Beth Sydd ar Goll?'},
    short:{en:'Remember the kit, then spot what disappeared.',cy:"Cofia'r cit, yna sylwa beth sydd wedi diflannu."},
