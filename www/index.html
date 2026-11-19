@@ -4982,6 +4982,12 @@ html.mv-full #zStage .mv-wrap.pn-strip .mv-scene{height:calc(var(--zH,100vh) - v
 }
 /* intro pages: the levels start below where the header drops down, so the header never covers them */
 html.z-full #zone:has(#zIntro:not([hidden])) .z-body{padding-top:calc(var(--zTopFull,80px) + 4px)!important}
+/* THE HEADER NEVER COVERS THE GAME: every game screen starts below the header's full height,
+   so nothing (instructions, the scene, buttons) is ever under the header, whether it is showing or hidden */
+html.z-full #zone .z-body{padding-top:calc(var(--zTopFull,80px) + 4px)!important}
+html.mv-full #zone .z-body{padding-top:var(--zTopH,80px)!important;background:var(--brandChar)}
+html.mv-full #zStage .mv-scene{height:calc(var(--zH,100vh) - var(--zTopH,80px))!important}
+html.mv-full #zStage .mv-wrap.pn-strip .mv-scene{height:calc(var(--zH,100vh) - var(--zTopH,80px) - var(--pnH,0px))!important}
 /* the cards in the bottom strip keep their dark writing (the strip's white text is only for its own words) */
 html.mv-full #zStage .mv-wrap.pn-strip .mv-panel #mvCards button,html.mv-full #zStage .mv-wrap.pn-strip .mv-panel #mvCards .mvc{color:#22301c!important}
 /* intro pages: the white instructions box, its text and the level buttons are always on the top layer, with every
@@ -5212,7 +5218,7 @@ en:{
   praise:[`Well done!`,`Fantastic!`,`Brilliant!`,`Super star!`,`Great kick!`,`Amazing!`,`You did it!`,`Top player!`,`Wonderful!`],
   oops:[`Have another go!`,`Ooh, nearly! Try again.`,`So close! Have another go.`,`Keep trying, you can do it!`],
   cf_ask:`How many footballs?`, cf_ask2:`How many footballs altogether?`, cf_say:`How many footballs can you count?`,
-  cf_say2:`{a} footballs, and {b} more. How many footballs altogether?`, cf_tip:`Tap each ball to count it`, cf_ball:`football`,
+  cf_say2:`{a} footballs, and {b} more. How many footballs altogether?`, cf_tip:`How many balls?`, cf_ball:`football`,
   cf_wrong:`That's {v}. Let's count again!`, cf_res:`You counted {s} out of {n} right first time!`,
   nm_ask:`Match each number to its group`, nm_say:`Tap a number, then tap the group with that many.`, nm_coach:`Tap a number, then its group`,
   nm_group:`group of {n}`, nm_pair:[`Great match!`,`Yes! {n}!`,`Super counting!`], nm_round:`All matched!`, nm_all:`You matched them all!`,
@@ -5276,7 +5282,7 @@ cy:{
   praise:[`Da iawn!`,`Ffantastig!`,`Gwych!`,`Seren!`,`Cic wych!`,`Anhygoel!`,`Ti wedi llwyddo!`,`Chwaraewr gwych!`,`Bendigedig!`],
   oops:[`Rho gynnig arall!`,`O, bron iawn! Tria eto.`,`Mor agos! Rho gynnig arall.`,`Dal ati, ti'n gallu!`],
   cf_ask:`Sawl pêl-droed?`, cf_ask2:`Sawl pêl-droed i gyd?`, cf_say:`Sawl pêl-droed sydd yna?`,
-  cf_say2:`{a}, a {b} arall. Sawl pêl-droed i gyd?`, cf_tip:`Tapia bob pêl i'w chyfrif`, cf_ball:`pêl-droed`,
+  cf_say2:`{a}, a {b} arall. Sawl pêl-droed i gyd?`, cf_tip:`Sawl pêl sydd?`, cf_ball:`pêl-droed`,
   cf_wrong:`Dyna {v}. Cyfra eto!`, cf_res:`Cyfraist ti {s} allan o {n} yn gywir y tro cyntaf!`,
   nm_ask:`Paria bob rhif gyda'i grŵp`, nm_say:`Tapia rif, yna tapia'r grŵp sydd â'r un nifer.`, nm_coach:`Tapia rif, yna ei grŵp`,
   nm_group:`grŵp o {n}`, nm_pair:[`Paru gwych!`,`Ie! {n}!`,`Cyfrif gwych!`], nm_round:`Popeth wedi'i baru!`, nm_all:`Ti wedi paru'r cyfan!`,
@@ -5928,7 +5934,7 @@ function countGame(api){
     }));
     api.coach(ask);api.say(speak,true);
   }
-  function next(){i++;if(i>=N)api.finish({stars:starsFor(score/N),text:t('cf_res',{s:score,n:N})});else round();}
+  function next(){i++;if(i>=N)api.finish({stars:starsFor(score/N),title:T('Well done!','Da iawn!'),text:T('You have completed this level.','Rwyt ti wedi cwblhau’r lefel hon.')});else round();}
   api.progress(0,N);round();
 }
 
@@ -6655,7 +6661,7 @@ const GAMES=[
   {id:'count-footballs',cats:['football','numbers'],diff:'easy',
    title:{en:'Count the Footballs',cy:'Cyfrif y Peli'},
    short:{en:'Count the balls on the pitch and pick the right number.',cy:"Cyfra'r peli ar y cae a dewis y rhif cywir."},
-   how:{en:['Look at the footballs on the pitch.','Tap each ball to count it.','Tap the number that matches.'],cy:["Edrycha ar y peli ar y cae.","Tapia bob pêl i'w chyfrif.","Tapia'r rhif sy'n cyfateb."]},
+   how:{en:['Look at the footballs on the pitch.','How many balls?','Tap the number that matches.'],cy:["Edrycha ar y peli ar y cae.","Sawl pêl sydd?","Tapia'r rhif sy'n cyfateb."]},
    art:()=>football()+football()+football(), start:countGame},
   {id:'number-match',cats:['numbers'],diff:'medium',
    title:{en:'Number Match',cy:'Paru Rhifau'},
@@ -9302,7 +9308,7 @@ function renderPaySheet(){
   payEl.innerHTML='<div class="sheet pay" role="dialog" aria-modal="true" aria-labelledby="payH">'+
     '<div class="sheet-head"><img alt="" src="'+(($('.brand img')||{}).src||'')+'"><div><h3 id="payH">'+pw('h')+'</h3><p>'+pw('p',c)+'</p></div></div>'+
     '<button class="btn primary" id="payBuy"'+(PAY.busy?' disabled':'')+'>'+LOCK_OPEN_ICON+(PAY.busy?pw('wait'):PAY.price?pw('buy',{p:PAY.price}):pw('buyNP'))+'</button>'+
-    '<button class="btn ghost" id="payRestore"'+(PAY.busy?' disabled':'')+'>'+pw('restore')+'</button>'+
+    '<button class="pay-restore-link" id="payRestore" style="background:none;border:0;box-shadow:none;min-height:0;padding:6px 10px;margin:2px auto 0;display:block;font:inherit;font-size:.85rem;font-weight:700;color:#6b7766;text-decoration:underline;cursor:pointer"'+(PAY.busy?' disabled':'')+'>'+pw('restore')+'</button>'+
     '<button class="btn ghost" id="payLater">'+pw('later')+'</button>'+
     '<p class="pay-msg" aria-live="polite">'+(PAY.msg||'')+'</p>'+
     (PAY_PREVIEW&&!inApp()?'<p class="pay-note">'+pw('preview')+'</p>':'')+'</div>';
@@ -9443,6 +9449,7 @@ applyLang();renderHome();
 .rf-card .rf-note ul{margin:0;padding-left:18px}
 .rf-btns{display:flex;flex-direction:column;gap:10px;margin-top:14px}
 .rf-btns .btn{width:100%}
+.rf-tech{font-size:.75rem!important;color:#7a8574;font-weight:600!important;word-break:break-word}
 .rf-big{font-size:58px;line-height:1;font-family:var(--emoji,inherit)}
 .rf-prev{position:relative;width:100%;aspect-ratio:4/3;border-radius:22px;overflow:hidden;background:#111;margin:8px 0}
 .rf-prev video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block}
@@ -9455,6 +9462,7 @@ applyLang();renderHome();
 .rf-out{width:100%;max-height:58vh;border-radius:18px;background:#000;display:block}
 .rf-spin{display:inline-block;animation:rfSpin 1.6s linear infinite}
 @keyframes rfSpin{to{transform:rotate(360deg)}}
+.rf-hint{margin:8px 0 0!important;font-size:.9rem;color:#4b5845}
 .rf-sharelbl{margin:16px 0 8px!important;font-family:var(--display);font-size:1.1rem}
 .rf-social{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .rf-soc{display:flex;flex-direction:column;align-items:center;gap:6px;border:0;border-radius:20px;padding:12px 6px 10px;color:#fff;font-family:var(--display);font-weight:800;font-size:.95rem;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.25);transition:transform .12s}
@@ -9506,6 +9514,9 @@ applyLang();renderHome();
     download:['Save video','Cadw’r fideo'],
     shareTo:['Share to','Rhannu i'],
     more:['More ways to share','Mwy o ffyrdd i rannu'],
+    tapSave:['In the menu that opens, tap “Save Video”.','Yn y ddewislen sy’n agor, tapia “Save Video”.'],
+    sheetDone:['If you tapped “Save Video”, it’s in your camera roll.','Os tapiaist ti “Save Video”, mae yn dy rhòl camera.'],
+    howToSheet:['Tap “Save Video” if you haven’t yet, then open {app}, start a new post and pick the video.','Tapia “Save Video” os nad wyt ti wedi gwneud yn barod, yna agora {app}, dechreua bostiad newydd a dewis y fideo.'],
     savedRoll:['Saved to your camera roll!','Wedi’i gadw i dy rhòl camera!'],
     savedDl:['Saved to your Downloads folder!','Wedi’i gadw i dy ffolder Llwythi!'],
     placeRoll:['camera roll','rhòl camera'],
@@ -9532,6 +9543,7 @@ applyLang();renderHome();
     camOpenH:['Open the app in your browser','Agor yr ap yn dy borwr'],
     camOpenP:['The camera can’t be used in this preview. Download the file and open it in Chrome, Edge or Safari, then try again.','Does dim modd defnyddio’r camera yn y rhagolwg hwn. Lawrlwytha’r ffeil a’i hagor yn Chrome, Edge neu Safari, yna rho gynnig arall arni.'],
     camPick:['Camera','Camera'],
+    noSupApp:['Camera access isn’t switched on in this version of the app yet. Please update the app and try again.','Dydy mynediad i’r camera ddim wedi’i droi ymlaen yn y fersiwn hon o’r ap eto. Diweddara’r ap a rho gynnig arall arni.'],
     noSupH:['Recording isn’t available here','Dydy recordio ddim ar gael yma'],
     noSupP:['This device or browser can’t record video. Try the latest version of the app.','Dydy’r ddyfais neu’r porwr hwn ddim yn gallu recordio fideo. Rho gynnig ar fersiwn diweddaraf yr ap.'],
     failH:['The video couldn’t be made','Doedd dim modd gwneud y fideo'],
@@ -9585,7 +9597,9 @@ applyLang();renderHome();
   function ui(){
     const busy=!!document.querySelector('.rf-ov');
     const stage=inStage();
-    pill.hidden=!RF.on||stage||busy;
+    const zd=document.getElementById('zDone'),zn=document.getElementById('zone');
+    const doneScr=!!(zd&&!zd.hidden&&zn&&!zn.hidden); /* the well-done screen has its own red Finish button */
+    pill.hidden=!RF.on||stage||busy||doneScr;
     recB.hidden=!RF.on||!stage||busy;
     const n=RF.clips.length;
     const t=document.getElementById('rfPillTxt');
@@ -9600,7 +9614,11 @@ applyLang();renderHome();
   function msg(h,p,btn,fn){const o=sheet('<div class="rf-big">🎥</div><h2>'+esc(h)+'</h2><p>'+esc(p)+'</p><div class="rf-btns"><button class="btn primary" id="rfOk">'+esc(btn||w('ok'))+'</button></div>');o.querySelector('#rfOk').addEventListener('click',()=>{closeSheet();if(fn)fn();});}
 
   function askConsent(){
-    if(!supported()){if(!window.isSecureContext||inFrame())msg(w('camOpenH'),w('camOpenP'));else msg(w('noSupH'),w('noSupP'));return;}
+    if(!supported()){
+      const inApp2=(()=>{try{return typeof inApp==='function'&&inApp();}catch(e){return false;}})();
+      if(!inApp2&&(!window.isSecureContext||inFrame()))msg(w('camOpenH'),w('camOpenP'));
+      else noSupport(inApp2);
+      return;}
     const o=sheet('<div class="rf-big">🎥</div><h2>'+esc(w('askH'))+'</h2><p>'+esc(w('askP'))+'</p>'+
       '<div class="rf-note"><b>'+esc(w('askG'))+'</b><ul><li>'+esc(w('askN1'))+'</li><li>'+esc(w('askN2'))+'</li></ul></div>'+
       '<div class="rf-btns"><button class="btn primary" id="rfYes">'+esc(w('askYes'))+'</button><button class="btn ghost" id="rfNo">'+esc(w('notNow'))+'</button></div>');
@@ -9610,6 +9628,18 @@ applyLang();renderHome();
       try{await startCamera();}catch(e){closeSheet();camError(e);return;}
       checkPosition();
     });
+  }
+  /* says exactly what's missing, so it can be fixed */
+  function noSupport(inApp2){
+    const miss=[];
+    if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia))miss.push('camera access (navigator.mediaDevices)');
+    if(!window.MediaRecorder)miss.push('video recording (MediaRecorder)');
+    if(!HTMLCanvasElement.prototype.captureStream)miss.push('video making (canvas.captureStream)');
+    const ios=(navigator.userAgent.match(/OS (\d+)_(\d+)/)||[]);
+    const info='Missing: '+miss.join(', ')+(ios[1]?' · iOS '+ios[1]+'.'+ios[2]:'')+(inApp2?' · app':' · browser')+(window.isSecureContext?'':' · not secure');
+    const camOnly=inApp2&&miss.length===1&&/mediaDevices/.test(miss[0]);
+    const o=sheet('<div class="rf-big">🎥</div><h2>'+esc(w('noSupH'))+'</h2><p>'+esc(w(camOnly?'noSupApp':'noSupP'))+'</p><p class="rf-tech">'+esc(info)+'</p><div class="rf-btns"><button class="btn primary" id="rfOk">'+esc(w('ok'))+'</button></div>');
+    o.querySelector('#rfOk').addEventListener('click',closeSheet);
   }
   function inFrame(){try{return window.self!==window.top;}catch(e){return true;}}
   function camError(e){
@@ -9675,7 +9705,7 @@ applyLang();renderHome();
     stopClip();
     const mt=mimeFor(CAM_TYPES);let rec;
     try{rec=new MediaRecorder(RF.stream,Object.assign({videoBitsPerSecond:1200000},mt?{mimeType:mt}:{}));}catch(e){try{rec=new MediaRecorder(RF.stream);}catch(e2){return;}}
-    const c={rec,chunks:[],t0:performance.now(),samples:[],title:L(G.title),tint:G.tint||'#e3f3d8',sticker:stickerOf(G),level:session?session.level:1,noLevels:!!G.noLevels};
+    const c={rec,chunks:[],frames:[],css:null,cssAt:0,cssN:0,t0:performance.now(),samples:[],title:L(G.title),tint:G.tint||'#e3f3d8',sticker:stickerOf(G),level:session?session.level:1,noLevels:!!G.noLevels};
     c.done=new Promise(r=>{c.res=r;});
     rec.ondataavailable=e=>{if(e.data&&e.data.size&&c.chunks)c.chunks.push(e.data);};
     rec.onstart=()=>{c.t0=performance.now();};
@@ -9696,7 +9726,7 @@ applyLang();renderHome();
     const type=(c.rec&&c.rec.mimeType)||(chunks[0]&&chunks[0].type)||'video/webm';
     const blob=new Blob(chunks,{type});
     if(c.dur>=3&&blob.size>0){
-      RF.clips.push({blob,url:URL.createObjectURL(blob),samples:c.samples,title:c.title,tint:c.tint,sticker:c.sticker,dur:c.dur,level:c.level,noLevels:c.noLevels});
+      RF.clips.push({blob,url:URL.createObjectURL(blob),samples:c.samples,frames:c.frames,aspect:c.aspect,title:c.title,tint:c.tint,sticker:c.sticker,dur:c.dur,level:c.level,noLevels:c.noLevels});
       while(RF.clips.length>KEEP_GAMES){const old=RF.clips.shift();try{URL.revokeObjectURL(old.url);}catch(e){}}
     }
     c.res();ui();
@@ -9783,6 +9813,118 @@ applyLang();renderHome();
       got.sort((a,b)=>a.s-b.s).forEach(x=>segs.push(x));
     });
     return segs;
+  }
+
+  /* ---------- pictures of the real game screen (character + background), twice a second ---------- */
+  /* The game scene is copied into an SVG picture (data URL + foreignObject), which every browser
+     lets us draw into a canvas without blocking the video. Rules and shared shapes are worked out
+     once every few seconds; each picture then takes a few milliseconds to build. */
+  const SNAP_W=360;
+  const sc2=document.createElement('canvas');const sx2=sc2.getContext('2d');
+  let snapBusy=false,snapSlow=0;
+  const stripSel=sel=>sel.replace(/::?(before|after|hover|active|focus-visible|focus-within|focus|first-letter|first-line|marker|placeholder|selection)\b/g,'').trim()||'*';
+  function sceneEl(){return document.querySelector('#zStage .mv-scene');}
+  function buildCss(scene){
+    const anc=[];for(let a=scene.parentElement;a;a=a.parentElement)anc.push(a);
+    const hit=q=>{try{return scene.matches(q)||!!scene.querySelector(q)||anc.some(a=>a.matches(q));}catch(e){return false;}};
+    const out=[];
+    const walk=(rules,dst)=>{for(const r of rules){
+      if(r.type===1){if(r.selectorText.split(',').some(s=>hit(stripSel(s))))dst.push(r.cssText);}
+      else if(r.type===4){let ok2=true;try{ok2=matchMedia(r.media.mediaText).matches;}catch(e){}if(ok2)walk(r.cssRules,dst);}
+      else if(r.type===12&&r.cssRules){const sub=[];walk(r.cssRules,sub);if(sub.length)dst.push('@supports '+r.conditionText+'{'+sub.join('')+'}');}
+    }};
+    for(const s of document.styleSheets){try{walk(s.cssRules,out);}catch(e){}}
+    const rs=getComputedStyle(document.documentElement);let vars='';for(let i=0;i<rs.length;i++){const p=rs[i];if(p.startsWith('--'))vars+=p+':'+rs.getPropertyValue(p)+';';}
+    return ':root{'+vars+'}'+out.join('\n')+'*{animation:none!important;transition:none!important}';
+  }
+  async function snapScene(c){
+    if(snapBusy||RF.snapOff)return;
+    const scene=sceneEl();if(!scene)return;
+    const r=scene.getBoundingClientRect(),W=Math.round(r.width),H=Math.round(r.height);if(W<50||H<50)return;
+    snapBusy=true;const t=(performance.now()-c.t0)/1000,t0=performance.now();
+    try{
+      /* style rules: refresh every 4 seconds or when the scene changes */
+      const n=scene.getElementsByTagName('*').length;
+      if(!c.css||performance.now()-c.cssAt>4000||Math.abs(n-c.cssN)>8){c.css=buildCss(scene);c.cssAt=performance.now();c.cssN=n;}
+      /* freeze whatever is moving right now (the character's pose, bouncing balls…) */
+      const anims=document.getAnimations().filter(a=>{const tg=a.effect&&a.effect.target;return tg&&scene.contains(tg)&&a.playState!=='idle';});
+      let freeze='',k=0;const tagged=[];
+      anims.forEach(a=>{const tg=a.effect.target,pe=a.effect.pseudoElement||'';const props=new Set();
+        try{a.effect.getKeyframes().forEach(f=>Object.keys(f).forEach(p=>{if(!['offset','easing','composite','computedOffset'].includes(p))props.add(p);}));}catch(e){}
+        if(!props.size)return;
+        if(!tg.hasAttribute('data-rfs')){tg.setAttribute('data-rfs',++k);tagged.push(tg);}
+        const cs=getComputedStyle(tg,pe||null);let decl='';
+        props.forEach(p=>{const cp=p==='cssFloat'?'float':p.replace(/[A-Z]/g,m=>'-'+m.toLowerCase());const v=cs.getPropertyValue(cp);if(v)decl+=cp+':'+v+' !important;';});
+        freeze+='[data-rfs="'+tg.getAttribute('data-rfs')+'"]'+pe+'{'+decl+'}';});
+      let html=new XMLSerializer().serializeToString(scene);
+      tagged.forEach(e=>e.removeAttribute('data-rfs'));
+      /* shared SVG shapes and colours the character uses */
+      const need=new Set(),seen=new Set();let defs='';
+      const scan=str=>{let m;const re=/url\(\s*['"]?#([\w:.-]+)['"]?\s*\)|href="#([\w:.-]+)"/g;while((m=re.exec(str)))need.add(m[1]||m[2]);};
+      scan(html);scan(freeze);if(!c.cssDefs){scan(c.css);}
+      while(need.size){const id=need.values().next().value;need.delete(id);if(seen.has(id))continue;seen.add(id);
+        const el=document.getElementById(id);if(!el||scene.contains(el))continue;const s=new XMLSerializer().serializeToString(el);defs+=s;scan(s);}
+      if(defs)html=html.replace(/^(<div[^>]*>)/,'$1<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden"><defs>'+defs+'</defs></svg>');
+      /* keep the page structure around the scene so its rules still apply */
+      let open='',close='';
+      for(let a=scene.parentElement;a&&a!==document.documentElement;a=a.parentElement){
+        const tag=a.tagName.toLowerCase(),at=[];
+        if(a.id)at.push('id="'+esc(a.id)+'"');if(typeof a.className==='string'&&a.className)at.push('class="'+esc(a.className)+'"');
+        for(const d in a.dataset)at.push('data-'+d.replace(/[A-Z]/g,m=>'-'+m.toLowerCase())+'="'+esc(a.dataset[d])+'"');
+        open='<'+tag+' '+at.join(' ')+' style="all:unset;display:block;position:relative;width:'+W+'px;height:'+H+'px;margin:0;padding:0;overflow:hidden">'+open;close+='</'+tag+'>';
+      }
+      html=html.replace(/^<div/,'<div style="position:absolute;left:0;top:0;width:'+W+'px;height:'+H+'px;margin:0"');
+      const doc='<html xmlns="http://www.w3.org/1999/xhtml" class="'+esc(document.documentElement.className)+'" lang="'+esc(document.documentElement.lang||'en')+'"><head><style>'+(c.css+freeze).replace(/<\/style/gi,'')+'</style></head><body class="'+esc(document.body.className)+'" style="margin:0;width:'+W+'px;height:'+H+'px;overflow:hidden">'+open+html+close+'</body></html>';
+      const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'"><foreignObject x="0" y="0" width="100%" height="100%">'+doc+'</foreignObject></svg>';
+      const img=new Image();
+      await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(new Error('snapshot image'));img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);});
+      sc2.width=SNAP_W;sc2.height=Math.round(SNAP_W*H/W);
+      sx2.clearRect(0,0,sc2.width,sc2.height);sx2.drawImage(img,0,0,sc2.width,sc2.height);
+      const blob=await new Promise((res,rej)=>{try{sc2.toBlob(b=>b?res(b):rej(new Error('toBlob')),'image/jpeg',.72);}catch(e){rej(e);}});
+      if(c.frames&&RF.cur===c){c.frames.push({t,blob});c.aspect=W/H;}
+      const took=performance.now()-t0;snapSlow=took>350?snapSlow+1:0;
+    }catch(e){
+      /* tainted canvas or unsupported: fall back to the drawn game card for the rest of the session */
+      if(e&&(e.name==='SecurityError'||/taint|insecure/i.test(String(e.message))))RF.snapOff=true;
+      try{console.warn('Record the fun snapshot:',e);}catch(e2){}
+    }finally{snapBusy=false;}
+  }
+  /* twice a second while a physical game is playing (once a second on slower phones) */
+  let snapTick=0;
+  setInterval(()=>{
+    const c=RF.cur;if(!c||RF.snapOff||!inStage())return;
+    let paused=false;try{paused=!!gamePaused;}catch(e){}if(paused)return;
+    snapTick++;if(snapSlow>2&&snapTick%2)return;
+    snapScene(c);
+  },500);
+  /* turn the pictures for one moment into ready-to-draw images */
+  async function loadFrames(c,s,e){
+    const out=[];if(!c.frames||!c.frames.length)return out;
+    const list=c.frames.filter(f=>f.t>=s-1&&f.t<=e+.5);
+    for(const f of list){try{out.push({t:f.t,img:await createImageBitmap(f.blob)});}catch(err){}}
+    return out;
+  }
+  function frameAt(fr,t){let best=null;for(const f of fr){if(f.t<=t)best=f;else break;}return best||fr[0]||null;}
+  /* the real game screen, small in the corner */
+  function drawGameShot(x,Wc,Hc,c,fimg,clock,an){
+    const portrait=Hc>Wc,asp=clamp(c.aspect||1.44,1,2.2);
+    const iw=Math.round((portrait?.62:.36)*Wc),ih=Math.round(iw/asp),m=Math.round(Math.min(Wc,Hc)*.035);
+    const X=Wc-iw-m,Y=Hc-ih-m,r=iw*.06;
+    const scl=an&&an.pop!=null?an.pop:1;if(scl<=.01)return null;
+    x.save();x.translate(X+iw/2,Y+ih/2);x.scale(scl,scl);x.translate(-(X+iw/2),-(Y+ih/2));
+    x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=iw*.06;x.shadowOffsetY=iw*.015;
+    rr(x,X-6,Y-6,iw+12,ih+12,r+6);x.fillStyle=LIME;x.fill();x.shadowColor='transparent';
+    rr(x,X,Y,iw,ih,r);x.clip();
+    x.fillStyle=c.tint;x.fillRect(X,Y,iw,ih);
+    try{x.drawImage(fimg,X,Y,iw,ih);}catch(e){}
+    /* game name strip */
+    const hh=ih*.15;x.fillStyle='rgba(36,36,36,.82)';x.fillRect(X,Y,iw,hh);x.fillStyle=LIME;x.fillRect(X,Y+hh-2,iw,2);
+    x.textBaseline='middle';x.font=Math.round(hh*.62)+'px '+EMOJI;x.textAlign='left';x.fillText(c.sticker,X+hh*.3,Y+hh*.54);
+    x.fillStyle='#fff';x.font='800 '+Math.round(hh*.5)+'px '+FONT;
+    let title=c.title;while(title.length>3&&x.measureText(title).width>iw-hh*1.6)title=title.slice(0,-2);if(title!==c.title)title=title.replace(/\s+$/,'')+'…';
+    x.fillText(title,X+hh*1.15,Y+hh*.56);
+    x.restore();
+    return {X,Y,iw,ih,cc:null};
   }
 
   /* ---------- drawing helpers ---------- */
@@ -9950,7 +10092,8 @@ applyLang();renderHome();
     if(smp.count&&smp.count!==st.lastCount){st.countAt=tOut;st.burst=tOut;}
     st.lastCount=smp.count;
     const an={pop:sg.newGame?back((local-.15)/.5):1,say:tOut-st.sayAt,count:st.countAt!=null?tOut-st.countAt:null};
-    const box=drawGame(x,Wc,Hc,c,smp,tOut,an);
+    const fimg=sg.fr&&sg.fr.length?(frameAt(sg.fr,sg.s+local)||{}).img:null;
+    const box=fimg?drawGameShot(x,Wc,Hc,c,fimg,tOut,an):drawGame(x,Wc,Hc,c,smp,tOut,an);
     /* stars burst from the count */
     if(box&&box.cc&&st.burst!=null&&tOut-st.burst<.9){const p=(tOut-st.burst)/.9;
       for(let k=0;k<10;k++){const a=k/10*Math.PI*2,d=u*.03+p*u*.14;x.save();x.globalAlpha=1-p;x.fillStyle=k%2?GOLD:LIME;star(x,box.cc.x+Math.cos(a)*d,box.cc.y+Math.sin(a)*d,u*.018*(1-p*.5),p*4+k);x.fill();x.restore();}}
@@ -10071,6 +10214,7 @@ applyLang();renderHome();
       if(isFinite(v.duration))sg.e=Math.min(sg.e,v.duration-.05);
       if(sg.e-sg.s<.3)continue;
       if(i>0)await seekVid(v,sg.s);
+      sg.fr=await loadFrames(c,sg.s,sg.e);
       const type=TRANS[i%TRANS.length];
       const draw=local=>{drawMoment(x,Wc,Hc,v,c,sampleAt(c,sg.s+local),outT+local,sg,local,st);if(local<TR)transition(x,Wc,Hc,snap,type,local/TR);};
       draw(0);
@@ -10088,6 +10232,7 @@ applyLang();renderHome();
         requestAnimationFrame(step);
       });
       v.pause();keep();outT+=sg.e-sg.s;
+      (sg.fr||[]).forEach(f=>{try{f.img.close&&f.img.close();}catch(e){}});sg.fr=null;
     }
     /* 3. the closing card */
     await animate(OUTRO,t=>{drawOutro(x,Wc,Hc,t);if(t<TR)transition(x,Wc,Hc,snap,'circle',t/TR);onProgress((outT+t)/total);});
@@ -10097,7 +10242,8 @@ applyLang();renderHome();
     if(musicOn){try{await ac.suspend();}catch(e){}}
     tracks.forEach(tk=>{try{tk.stop();}catch(e){}});
     onProgress(1);
-    return new Blob(chunks,{type:rec.mimeType||mt||'video/webm'});
+    const outType=/mp4/i.test(rec.mimeType||mt||'')?'video/mp4':'video/webm';
+    return new Blob(chunks,{type:outType});
   }
 
   async function finishGames(){
@@ -10145,6 +10291,7 @@ applyLang();renderHome();
       x:'<svg viewBox="0 0 24 24"><path fill="#fff" d="M17.8 3h3l-6.6 7.6L22 21h-6.1l-4.8-6.3L5.6 21h-3l7.1-8.1L2.2 3h6.2l4.3 5.7L17.8 3zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5z"/></svg>'};
     const o=sheet('<h2>'+esc(w('doneH'))+' 🎉</h2><video class="rf-out" controls playsinline autoplay src="'+url+'"></video>'+
       '<div class="rf-btns"><button class="btn primary" id="rfRoll">📥 '+esc(w(where==='roll'?'roll':'download'))+'</button></div>'+
+      (viaSheet()?'<p class="rf-hint">'+esc(w('tapSave'))+'</p>':'')+
       '<p class="rf-sharelbl">'+esc(w('shareTo'))+'</p><div class="rf-social">'+
         '<button class="rf-soc ig" data-soc="ig">'+ICO.ig+'<span>Instagram</span></button>'+
         '<button class="rf-soc fb" data-soc="fb">'+ICO.fb+'<span>Facebook</span></button>'+
@@ -10158,13 +10305,13 @@ applyLang();renderHome();
     o.querySelector('#rfMore').addEventListener('click',()=>gated(()=>shareFile(blob)));
     o.querySelector('#rfRoll').addEventListener('click',async()=>{
       const r=await saveCopy(blob);
-      if(r==='roll')say('✅ '+esc(w('savedRoll')));else if(r==='downloads')say('✅ '+esc(w('savedDl')));});
+      if(r==='roll')say('✅ '+esc(w('savedRoll')));else if(r==='downloads')say('✅ '+esc(w('savedDl')));else if(r==='shared')say('✅ '+esc(w('sheetDone')));});
     o.querySelectorAll('[data-soc]').forEach(b=>b.addEventListener('click',()=>gated(async()=>{
       const app=SOC[b.dataset.soc];
       const r=await saveCopy(blob);
       if(!r)return;
       const place=r==='roll'?w('placeRoll'):r==='downloads'?w('placeDl'):'';
-      say('✅ <b>'+esc(place?w('savedFor',{place,app:app.name}):w('readyFor',{app:app.name}))+'</b><br><small>'+esc(w('howTo',{app:app.name}))+'</small>'+
+      say('✅ <b>'+esc(place?w('savedFor',{place,app:app.name}):w('readyFor',{app:app.name}))+'</b><br><small>'+esc(r==='shared'?w('howToSheet',{app:app.name}):w('howTo',{app:app.name}))+'</small>'+
         '<button class="btn primary rf-open" style="--sc:'+app.col+'">'+esc(w('openApp',{app:app.name}))+' ↗</button>');
       note.querySelector('.rf-open').addEventListener('click',()=>openApp(app));
     })));
@@ -10183,6 +10330,8 @@ applyLang();renderHome();
   const plugins=()=>{const C=window.Capacitor;return (C&&C.Plugins)||{};};
   const appMode=()=>{try{return typeof inApp==='function'&&inApp();}catch(e){return false;}};
   /* where a saved copy goes: the camera roll in the phone app, Downloads on a laptop */
+  /* no photos plugin on a phone: the share menu (with "Save Video") is how it gets to the camera roll */
+  function viaSheet(){const P=plugins();return isPhone()&&!(appMode()&&P.Media&&P.Filesystem);}
   function saveWhere(){const P=plugins();if(appMode()&&P.Media&&P.Filesystem)return 'roll';if(isPhone())return 'roll';return 'downloads';}
   /* Apple's Kids rules: a grown-up answers a sum before anything leaves the app */
   function gated(fn){if(appMode()&&typeof openGate==='function')openGate(fn,'link');else fn();}
@@ -10217,8 +10366,8 @@ applyLang();renderHome();
   /* the device's own share sheet */
   async function shareFile(blob){
     const name=fileName(blob),P=plugins();
-    try{const file=new File([blob],name,{type:blob.type});
-      if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:w('doneH')});return true;}}
+    try{const file=new File([blob],name,{type:/mp4/.test(blob.type)?'video/mp4':'video/webm'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return true;}}
     catch(e){if(e&&e.name==='AbortError')return false;}
     if(P.Filesystem&&P.Share){
       try{const uri=await cacheFile(blob,name);
