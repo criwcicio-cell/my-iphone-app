@@ -1918,6 +1918,19 @@ html[lang="cy"] #hearHow{display:none}
 .mvc.mvready span{color:#fff;font-weight:800;font-size:1.3rem}
 @keyframes mvReadyIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .mv-wrap .mv-grass.long{font-size:.74em;line-height:1.1}
+
+/* unlock all games: locked cards, banner, sheet */
+.gcard{position:relative}
+.gcard.locked .g-art,.gcard.locked .g-body{opacity:.55;filter:saturate(.6)}
+.lockbadge{position:absolute;top:10px;left:10px;z-index:3;width:42px;height:42px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.lockbadge svg{width:22px;height:22px}
+.pay-banner{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;margin:0 0 14px;padding:8px 18px;border-radius:999px;background:var(--pitch);color:#fff;font-family:var(--display);font-weight:800;font-size:1.05rem;box-shadow:0 4px 0 var(--deep);text-align:center}
+.pay-banner svg{width:22px;height:22px;flex:none}
+.pay-banner:active{transform:translateY(2px);box-shadow:0 2px 0 var(--deep)}
+#paySheet{z-index:85}
+.sheet.pay .btn:disabled{opacity:.6}
+.pay-msg{min-height:1.3em;text-align:center;font-weight:700;color:var(--ink)}
+.pay-note{text-align:center;font-size:.85rem;color:var(--muted)}
 </style>
 
 <style>
@@ -5550,6 +5563,7 @@ function applyLang(){
 function setLang(l){
   if(l===lang)return;lang=l;saved.langPick=l;persist();hush();sfx.pop(2);
   applyLang();renderHome();
+  if(!$('#zone').hidden&&G&&G.noCy&&lang==='cy'){closeGame();return;}
   if(!$('#zone').hidden&&G){if(!$('#zIntro').hidden)showIntro();else if(!$('#zStage').hidden&&session)play(session.level);else $('#zTitle').textContent=L(G.title);}
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-lang]');if(b)setLang(b.dataset.lang);});
@@ -5595,8 +5609,9 @@ function renderFilters(){
   $('#filters').innerHTML=chipRow(t('f_topic'),'cat',CATEGORIES.map(c=>[c.id,L(c.name)]))+chipRow(t('f_level'),'diff',Object.keys(DIFF).map(k=>[k,L(DIFF[k].name)]));
 }
 function renderAll(){
-  const list=GAMES.filter(g=>(!F.cat||g.cats.includes(F.cat))&&(!F.diff||g.diff===F.diff));
-  $('#gameCount').textContent=t('count',{a:list.length,b:GAMES.length});
+  const all=GAMES.filter(g=>!(g.noCy&&lang==='cy')); /* some games are English only */
+  const list=all.filter(g=>(!F.cat||g.cats.includes(F.cat))&&(!F.diff||g.diff===F.diff));
+  $('#gameCount').textContent=t('count',{a:list.length,b:all.length});
   $('#allGrid').innerHTML=list.length?list.map(card).join(''):'<div class="empty">'+t('empty')+'<br><button class="btn ghost" data-clear style="margin-top:12px">'+t('show_all')+'</button></div>';
 }
 function showPage(id){
@@ -5626,6 +5641,7 @@ let G=null, session=null, chosen=0;
 const pickOne=a=>a[R(a.length)];
 
 function openGame(id){
+  if(typeof gameLocked==='function'&&gameLocked(id)){openPay();return;} /* not unlocked yet: show the unlock sheet */
   G=GAME[id];if(!G)return;
   $('#zone').dataset.game=id;$('#zone').dataset.kind=G.kind==='move'?'move':'learn';
   $('#zTitle').textContent=L(G.title);
@@ -5760,12 +5776,16 @@ function requestExit(){closeGame();}
 let gq={a:0,b:0,entry:''};
 function newSum(){gq.a=11+R(19);gq.b=6+R(9);gq.entry='';$('#gateQ').textContent=gq.a+' + '+gq.b;showEntry();}
 function showEntry(){$('#gateA').textContent=gq.entry||'?';$('#gateA').classList.toggle('empty',!gq.entry);}
-function openGate(){hush();$('#toast').hidden=true;newSum();$('#gateMsg').textContent='';$('#gate').hidden=false;try{$('.gate').scrollIntoView({block:'nearest'});}catch(e){}}
-function closeGate(){$('#gate').hidden=true;}
+let gateThen=null;
+/* openGate(then, kind): after the right answer run then() (default: leave the game). kind 'buy' or 'link' changes the wording. */
+function openGate(then,kind){gateThen=typeof then==='function'?then:null;hush();$('#toast').hidden=true;newSum();$('#gateMsg').textContent='';
+  const gp=$('#gate p[data-t="gate_p"]'),gc=$('#gateCancel');if(gp)gp.textContent=kind&&typeof pw==='function'?pw('gate_'+kind):t('gate_p');if(gc)gc.textContent=kind&&typeof pw==='function'?pw('later'):t('gate_back');
+  $('#gate').hidden=false;try{$('.gate').scrollIntoView({block:'nearest'});}catch(e){}}
+function closeGate(){$('#gate').hidden=true;gateThen=null;}
 function gateKey(k){if(k==='del')gq.entry=gq.entry.slice(0,-1);else if(gq.entry.length<3)gq.entry+=k;$('#gateMsg').textContent='';showEntry();}
 function gateCheck(){
   if(!gq.entry)return;
-  if(+gq.entry===gq.a+gq.b){closeGate();closeGame();}
+  if(+gq.entry===gq.a+gq.b){const f=gateThen;closeGate();if(f)f();else closeGame();}
   else{$('#gateMsg').textContent=t('gate_wrong');const g=$('.gate');g.classList.remove('shake');void g.offsetWidth;g.classList.add('shake');newSum();}
 }
 $('#keypad').innerHTML=['1','2','3','4','5','6','7','8','9','del','0'].map(k=>'<button data-key="'+k+'"'+(k==='del'?' class="del" data-ta="gate_del">⌫':'>'+k)+'</button>').join('');
@@ -6650,7 +6670,7 @@ const GAMES=[
    how:{en:['Tap a card to turn it over.','Tap another card to find its partner.','Remember where the pictures are!'],cy:["Tapia gerdyn i'w droi.","Tapia gerdyn arall i ffeindio'i bartner.","Cofia ble mae'r lluniau!"]},
    art:()=>emo('🃏')+emo('⚽'), start:memoryGame},
   {id:'shape-sorter',cats:['shapes','memory'],diff:'easy',
-   title:{en:'Shape Sorter',cy:'Didoli Siapiau'},
+   title:{en:'Shape Sorter',cy:'Siapiau'},
    short:{en:'Drag each shape into the space where it fits.',cy:"Llusga bob siâp i'r lle mae'n ffitio."},
    how:{en:['Pick up a shape with your finger.','Drag it to the space that matches.','Or tap a shape, then tap its space.'],cy:['Coda siâp gyda dy fys.',"Llusga fe i'r lle sy'n cyfateb.","Neu tapia siâp, yna tapia'i le."]},
    art:()=>shape('circle','#ff9233')+shape('triangle','#3b7ddd')+shape('star','#ffd23f'), start:shapeGame},
@@ -6659,7 +6679,7 @@ const GAMES=[
    short:{en:'Fun questions about numbers, colours, shapes and football.',cy:'Cwestiynau hwyliog am rifau, lliwiau, siapiau a phêl-droed.'},
    how:{en:['Listen to the question.','Look at the picture.','Tap the right answer.'],cy:["Gwranda ar y cwestiwn.","Edrycha ar y llun.","Tapia'r ateb cywir."]},
    art:()=>'<span class="glyph">?</span>'+football(), start:quizGame},
-  {id:'first-letters',cats:['letters'],diff:'medium',
+  {id:'first-letters',cats:['letters'],diff:'medium',noCy:true, /* English only: hidden when the app is in Welsh */
    title:{en:'First Letters',cy:'Llythrennau Cyntaf'},
    short:{en:'Spot letters, find the letter a word starts with, and read first words.',cy:"Sylwi ar lythrennau, ffeindio llythyren gyntaf gair, a darllen geiriau cyntaf."},
    how:{en:['Look at the picture.','Listen to the word.','Tap the letter (or word) that matches.'],cy:["Edrycha ar y llun.","Gwranda ar y gair.","Tapia'r llythyren (neu'r gair) sy'n cyfateb."]},
@@ -6747,17 +6767,17 @@ const GAMES=[
    how:{en:['Listen to the coach.','Find the right balls.','Tap them to pop them!'],cy:["Gwranda ar yr hyfforddwr.","Ffeindia'r peli cywir.","Tapia nhw i'w byrstio!"]},
    art:()=>football('#45b549')+football('#ff7eb6')+football('#45b549'), start:popGame},
   {id:'kit-bag-sort',cats:['shapes','memory'],diff:'easy',
-   title:{en:'Kit Bag Sort',cy:"Didoli'r Bag Cit"},
+   title:{en:'Kit Bag Sort',cy:'Bag Cit'},
    short:{en:'Sort the kit into the right bags.',cy:"Didola'r cit i'r bagiau cywir."},
    how:{en:['Look at the bags.','Drag each thing into its bag.','Or tap a thing, then tap its bag.'],cy:["Edrycha ar y bagiau.","Llusga bob peth i'w fag.","Neu tapia beth, yna tapia'i fag."]},
    art:()=>emo('🎒')+football('#e5483f')+football('#3b7ddd'), start:sortGame},
   {id:'pitch-puzzle',cats:['memory','creative'],diff:'medium',
-   title:{en:'Pitch Puzzle',cy:'Pos y Cae'},
+   title:{en:'Pitch Puzzle',cy:'Jig-so'},
    short:{en:'Put the jigsaw pieces back together.',cy:"Rho ddarnau'r jig-so yn ôl at ei gilydd."},
    how:{en:['Look at the pieces.','Drag each piece to its place.','Make the whole picture!'],cy:["Edrycha ar y darnau.","Llusga bob darn i'w le.","Gwna'r llun cyfan!"]},
    art:()=>emo('🧩')+football(), start:puzzleGame},
   {id:'dribble-maze',cats:['memory','football'],diff:'medium',
-   title:{en:'Dribble Maze',cy:'Drysfa Driblo'},
+   title:{en:'Dribble Maze',cy:'Driblo'},
    short:{en:'Dribble the ball through the maze to the goal.',cy:"Dribla'r bêl drwy'r ddrysfa i'r gôl."},
    how:{en:['Find the way to the goal.','Tap the square next to the ball to move.','Or use the arrow buttons.'],cy:["Ffeindia'r ffordd i'r gôl.","Tapia'r sgwâr wrth ymyl y bêl i symud.","Neu defnyddia'r botymau saeth."]},
    art:()=>football()+emo('🥅'), start:mazeGame},
@@ -6767,7 +6787,7 @@ const GAMES=[
    how:{en:['Look at the shirt numbers.','Find the first number.','Tap the shirts in order.'],cy:["Edrycha ar y rhifau crys.","Ffeindia'r rhif cyntaf.","Tapia'r crysau mewn trefn."]},
    art:()=>shirt('#e5483f',1)+shirt('#e5483f',2)+shirt('#e5483f',3), start:lineupGame},
   {id:'chalk-tracing',cats:['creative','letters'],diff:'easy',
-   title:{en:'Chalk Tracing',cy:'Olrhain Sialc'},
+   title:{en:'Chalk Tracing',cy:'Llwybr Sialc'},
    short:{en:'Trace lines, shapes, numbers and letters on the coach\'s chalkboard.',cy:"Olrhain llinellau, siapiau, rhifau a llythrennau ar fwrdd sialc yr hyfforddwr."},
    how:{en:['Start at the green dot.','Follow the dotted line with your finger.','Keep going to the end!'],cy:["Dechreua wrth y dot gwyrdd.","Dilyna'r llinell ddotiog gyda dy fys.","Dal ati i'r diwedd!"]},
    art:()=>'<span class="glyph" style="font-family:var(--display)">✎</span><span class="glyph">2</span>', start:traceGame}
@@ -7165,7 +7185,7 @@ const BGM_STYLES=['pop','calypso','chip','ska','marimba','disco','march','swing'
 const BGM_FIXED={'mv-cool-down':'calm','mv-dinosaur':'sneaky','mv-monster':'sneaky','mv-wolf':'sneaky','mv-jungle':'calypso'};
 function bgmStyle(id){
   if(BGM_FIXED[id])return BGM_FIXED[id];
-  const list=(typeof GAMES!=='undefined'?GAMES:[]).map(g=>g.id).concat((typeof MOVE_GAMES!=='undefined'?MOVE_GAMES:[]).map(g=>g.id));
+  const list=BGM.order||(typeof GAMES!=='undefined'?GAMES:[]).map(g=>g.id).concat((typeof MOVE_GAMES!=='undefined'?MOVE_GAMES:[]).map(g=>g.id));
   const i=list.indexOf(id);
   return BGM_STYLES[(i<0?Math.floor(bgmRand(id||'x')()*99):i)%BGM_STYLES.length];
 }
@@ -7283,7 +7303,11 @@ function bgmScreen(){
   if(!z||z.hidden)return 'menu';
   if(zi&&!zi.hidden&&typeof G!=='undefined'&&G)return 'intro:'+G.id;
   return '';}
+/* start as soon as the app opens: inside the iPhone app sound is allowed without a tap, so wake the sound
+   engine straight away; a web browser still waits for the first tap, which the tap unlock handles */
+let bgmWake=0;
 setInterval(()=>{const w=bgmScreen();if(!w)return;
+  if(!bgmWake||Date.now()-bgmWake>1500){const a0=audio();if(a0&&a0.state!=='running'){bgmWake=Date.now();try{audioSessionPlayback();const pr=a0.resume();if(pr&&pr.catch)pr.catch(()=>{});}catch(e){}}}
   if(BGM.on&&(BGM.scr===w||!BGM.scr))return; /* already playing it, or a game's own music is playing */
   const a=audio();if(!a||a.state!=='running')return;
   bgmStart(()=>bgmScreen()===w,w==='menu'?'menu':w.slice(6),w==='menu'?.42:.38);BGM.scr=w;},400);
@@ -9250,6 +9274,128 @@ function moveFinish(o){o=o||{};
   const cols=['#8fd14f','#ffd23f','#3b7ddd','#ff7eb6','#ff9233','#ffffff'];
   for(let k=0;k<46;k++){const c=document.createElement('i');c.className='confetti';c.style.left=R(100)+'vw';c.style.background=cols[k%cols.length];c.style.animationDuration=(1.8+Math.random()*1.8)+'s';c.style.animationDelay=(Math.random()*.6)+'s';c.style.setProperty('--dx',(R(160)-80)+'px');c.style.setProperty('--r',R(900)+'deg');document.body.appendChild(c);setTimeout(()=>c.remove(),4500);}
 }
+
+/* ======================================================================
+   UNLOCK ALL GAMES — one-off In-App Purchase (iPhone / iPad app only)
+   - 4 learning games and 4 physical games are always open; they are shown first.
+   - Inside the App Store app the rest are locked until the one-off purchase is made.
+   - In a web browser everything stays open (add #paywall to the address to preview the lock).
+   - Buying needs a grown-up to answer an adding sum first (Apple's Kids rules).
+   - Uses the cordova-plugin-purchase plugin (window.CdvPurchase) in the Capacitor app.
+   ====================================================================== */
+const PRODUCT_ID='criwcicio.unlockall';   /* must match the Product ID made in App Store Connect */
+const OPEN_LEARN=['count-footballs','memory-match','shape-sorter','kit-designer'];
+const OPEN_MOVE=['mv-copy-me','mv-traffic','mv-colour-hunt','mv-lava'];
+const OPEN_IDS=OPEN_LEARN.concat(OPEN_MOVE);
+
+/* keep each game's own music exactly as before, then put the open games first */
+BGM.order=GAMES.map(g=>g.id).concat(MOVE_GAMES.map(g=>g.id));
+const openFirst=(arr,open)=>{const a=open.map(id=>arr.find(g=>g.id===id)).filter(Boolean),b=arr.filter(g=>!open.includes(g.id));arr.splice(0,arr.length,...a,...b);};
+openFirst(GAMES,OPEN_LEARN);openFirst(MOVE_GAMES,OPEN_MOVE);
+
+const PAY={store:null,product:null,price:'',ready:false,busy:false,msg:''};
+const PAY_PREVIEW=/paywall/.test(location.hash);
+function inApp(){try{const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform());}catch(e){return false;}}
+const lockOn=()=>(inApp()||PAY_PREVIEW)&&!saved.paid;
+function gameLocked(id){return lockOn()&&!OPEN_IDS.includes(id);}
+const PW={
+  en:{h:'Unlock all games',p:'This game is part of the full set. Unlock all {n} games ({a} learning games and {b} physical games) with one payment. No subscription.',
+      buy:'Unlock for {p}',buyNP:'Unlock all games',restore:'Restore purchases',later:'Not now',wait:'Please wait…',
+      done:'All games unlocked!',err:'The payment didn’t go through. Please try again.',none:'No earlier purchase found on this Apple ID.',
+      na:'Purchases aren’t available right now. Please check your internet connection and try again.',restored:'Purchase restored. All games unlocked!',
+      banner:'{o} of {n} games open · Unlock all',gate_buy:'To buy, answer this adding sum.',gate_link:'To visit our website, answer this adding sum.',lockTag:'Locked',preview:'Preview only: no real payment is taken here.'},
+  cy:{h:'Datgloi pob gêm',p:'Mae’r gêm hon yn rhan o’r casgliad llawn. Datglowch bob un o’r {n} gêm ({a} gêm ddysgu a {b} gêm symud) gydag un taliad. Dim tanysgrifiad.',
+      buy:'Datgloi am {p}',buyNP:'Datgloi pob gêm',restore:'Wedi prynu o’r blaen?',later:'Dim nawr',wait:'Arhoswch funud…',
+      done:'Mae pob gêm wedi’i datgloi!',err:'Aeth y taliad ddim drwodd. Rhowch gynnig arall arni.',none:'Dim pryniant blaenorol ar yr Apple ID hwn.',
+      na:'Dydy prynu ddim ar gael ar hyn o bryd. Gwiriwch eich cysylltiad â’r rhyngrwyd a rhowch gynnig arall arni.',restored:'Pryniant wedi’i adfer. Mae pob gêm wedi’i datgloi!',
+      banner:'{o} o {n} gêm ar agor · Datgloi’r cyfan',gate_buy:'I brynu, atebwch y sym adio hon.',gate_link:'I fynd i’n gwefan, atebwch y sym adio hon.',lockTag:'Ar glo',preview:'Rhagolwg yn unig: does dim taliad go iawn yma.'}};
+const pw=(k,v)=>{let s=(PW[lang]||PW.en)[k];if(v)Object.keys(v).forEach(x=>s=s.split('{'+x+'}').join(v[x]));return s;};
+function payCounts(){const a=GAMES.filter(g=>!(g.noCy&&lang==='cy')).length,b=MOVE_GAMES.length;return {a,b,n:a+b,o:OPEN_LEARN.length+OPEN_MOVE.length};}
+
+/* ---------- the unlock sheet ---------- */
+const payEl=document.createElement('div');payEl.className='sheet-back';payEl.id='paySheet';payEl.hidden=true;document.body.appendChild(payEl);
+function renderPaySheet(){
+  if(payEl.hidden)return;const c=payCounts();
+  payEl.innerHTML='<div class="sheet pay" role="dialog" aria-modal="true" aria-labelledby="payH">'+
+    '<div class="sheet-head"><img alt="" src="'+(($('.brand img')||{}).src||'')+'"><div><h3 id="payH">'+pw('h')+'</h3><p>'+pw('p',c)+'</p></div></div>'+
+    '<button class="btn primary" id="payBuy"'+(PAY.busy?' disabled':'')+'>'+LOCK_OPEN_ICON+(PAY.busy?pw('wait'):PAY.price?pw('buy',{p:PAY.price}):pw('buyNP'))+'</button>'+
+    '<button class="btn ghost" id="payRestore"'+(PAY.busy?' disabled':'')+'>'+pw('restore')+'</button>'+
+    '<button class="btn ghost" id="payLater">'+pw('later')+'</button>'+
+    '<p class="pay-msg" aria-live="polite">'+(PAY.msg||'')+'</p>'+
+    (PAY_PREVIEW&&!inApp()?'<p class="pay-note">'+pw('preview')+'</p>':'')+'</div>';
+  $('#payBuy').onclick=()=>openGate(payBuy,'buy');
+  $('#payRestore').onclick=payRestore;
+  $('#payLater').onclick=closePay;
+}
+const LOCK_OPEN_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>';
+function openPay(){hush();PAY.msg='';payEl.hidden=false;payInit();renderPaySheet();sfx.pop(2);}
+function closePay(){payEl.hidden=true;}
+payEl.addEventListener('click',e=>{if(e.target===payEl)closePay();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!payEl.hidden&&$('#gate').hidden)closePay();});
+function payMsg(m){PAY.msg=m;renderPaySheet();}
+function payUnlocked(say){
+  const was=!!saved.paid;saved.paid=true;persist();PAY.busy=false;
+  if(!was||say){renderHome();closePay();if(say!==false){sfx.ding();toast(pw(say==='restored'?'restored':'done'));}}
+}
+
+/* ---------- Apple In-App Purchase (cordova-plugin-purchase) ---------- */
+function payInit(){
+  if(PAY.store)return true;
+  const C=window.CdvPurchase;if(!C||!C.store)return false;
+  try{
+    const {store,ProductType,Platform}=C;PAY.store=store;
+    store.register([{id:PRODUCT_ID,type:ProductType.NON_CONSUMABLE,platform:Platform.APPLE_APPSTORE}]);
+    const upd=p=>{if(!p||p.id!==PRODUCT_ID)return;PAY.product=p;try{PAY.price=(p.pricing&&p.pricing.price)||PAY.price;}catch(e){}if(p.owned)payUnlocked(false);renderPaySheet();};
+    store.when().productUpdated(upd)
+      .approved(tr=>{try{if((tr.products||[]).some(x=>x.id===PRODUCT_ID))payUnlocked(true);}catch(e){}try{tr.finish();}catch(e){}})
+      .finished(tr=>{try{if((tr.products||[]).some(x=>x.id===PRODUCT_ID))payUnlocked(false);}catch(e){}});
+    store.error(e=>{try{adiag('purchase error: '+(e&&(e.code+' '+e.message)));}catch(_){}if(PAY.busy){PAY.busy=false;payMsg(pw('err'));}});
+    store.initialize([Platform.APPLE_APPSTORE]).then(()=>{PAY.ready=true;upd(store.get(PRODUCT_ID,Platform.APPLE_APPSTORE));try{if(store.owned(PRODUCT_ID))payUnlocked(false);}catch(e){}});
+  }catch(e){PAY.store=null;try{adiag('purchase setup: '+e);}catch(_){}return false;}
+  return true;
+}
+document.addEventListener('deviceready',payInit);
+{let tries=0;const iv=setInterval(()=>{if(payInit()||++tries>20)clearInterval(iv);},1000);payInit();}
+
+function payBuy(){
+  if(PAY_PREVIEW&&!inApp()){payUnlocked(true);return;}
+  if(!payInit()||!PAY.product){payMsg(pw('na'));return;}
+  const offer=PAY.product.getOffer&&PAY.product.getOffer();if(!offer){payMsg(pw('na'));return;}
+  PAY.busy=true;payMsg('');
+  Promise.resolve(offer.order()).then(err=>{
+    if(!err)return; /* success arrives through approved() */
+    PAY.busy=false;
+    const cancelled=window.CdvPurchase&&CdvPurchase.ErrorCode&&err.code===CdvPurchase.ErrorCode.PAYMENT_CANCELLED;
+    payMsg(cancelled?'':pw('err'));
+  }).catch(()=>{PAY.busy=false;payMsg(pw('err'));});
+}
+function payRestore(){
+  if(PAY_PREVIEW&&!inApp()){payMsg(pw('none'));return;}
+  if(!payInit()){payMsg(pw('na'));return;}
+  PAY.busy=true;payMsg('');
+  Promise.resolve(PAY.store.restorePurchases()).then(()=>{
+    let owned=false;try{owned=PAY.store.owned(PRODUCT_ID);}catch(e){}
+    if(owned)payUnlocked('restored');else{PAY.busy=false;payMsg(pw('none'));}
+  }).catch(()=>{PAY.busy=false;payMsg(pw('na'));});
+}
+
+/* ---------- locked cards and the banner on each menu ---------- */
+const PAD='<span class="lockbadge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>';
+function markLocks(){
+  $$('#site [data-game]').forEach(b=>{const l=gameLocked(b.dataset.game);b.classList.toggle('locked',l);
+    const has=b.querySelector('.lockbadge');if(l&&!has)b.insertAdjacentHTML('beforeend',PAD);if(!l&&has)has.remove();
+    const h=b.querySelector('h3');if(h)b.setAttribute('aria-label',h.textContent+(l?' ('+pw('lockTag')+')':''));});
+  [['allGrid','payBanL'],['moveGrid','payBanM']].forEach(([g,id])=>{const grid=document.getElementById(g);if(!grid)return;let ban=document.getElementById(id);
+    if(!lockOn()){if(ban)ban.remove();return;}
+    if(!ban){ban=document.createElement('button');ban.id=id;ban.className='pay-banner';ban.addEventListener('click',openPay);grid.parentNode.insertBefore(ban,grid);}
+    ban.innerHTML=LOCK_OPEN_ICON+'<span>'+pw('banner',payCounts())+'</span>';});
+}
+{const rh=renderHome;renderHome=function(){rh();markLocks();};}
+{const ra=renderAll;renderAll=function(){ra();markLocks();};}
+
+/* ---------- links out of the app need a grown-up too (Apple's Kids rules) ---------- */
+document.addEventListener('click',e=>{if(!inApp())return;const a=e.target.closest('a[href^="http"]');if(!a)return;
+  e.preventDefault();e.stopPropagation();const href=a.href;openGate(()=>{location.href=href;},'link');},true);
 
 /* ---------------- start ---------------- */
 try{$('#footLogo').src=$('.brand img').src;$('#sheetLogo').src=$('.brand img').src;}catch(e){}

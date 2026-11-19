@@ -20,7 +20,8 @@
   "homepage": "https://github.com/criwcicio-cell/my-iphone-app#readme",
   "dependencies": {
     "@capacitor/core": "^8.6.2",
-    "@capacitor/ios": "^8.6.2"
+    "@capacitor/ios": "^8.6.2",
+    "cordova-plugin-purchase": "^13.20.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.6.2"
