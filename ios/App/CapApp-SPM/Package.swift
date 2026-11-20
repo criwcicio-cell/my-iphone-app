@@ -12,6 +12,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.6.2"),
+        .package(name: "CapacitorCommunityMedia", path: "../../../node_modules/@capacitor-community/media"),
+        .package(name: "CapacitorFilesystem", path: "../../../node_modules/@capacitor/filesystem"),
         .package(name: "CordovaPluginPurchase", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginPurchase")
     ],
     targets: [
@@ -20,6 +22,8 @@ let package = Package(
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
+                .product(name: "CapacitorCommunityMedia", package: "CapacitorCommunityMedia"),
+                .product(name: "CapacitorFilesystem", package: "CapacitorFilesystem"),
                 .product(name: "CordovaPluginPurchase", package: "CordovaPluginPurchase")
             ]
         )

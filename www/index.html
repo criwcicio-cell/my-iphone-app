@@ -428,6 +428,10 @@ footer{margin-top:40px;background:var(--surface);border-top:1px solid var(--line
 .copt.big{width:150px;height:150px}
 @media (max-width:520px){.copt.big{width:130px;height:130px}}
 .sorter.big .piece{width:120px;height:120px}
+.sorter.lots .piece{width:62px!important;height:62px!important}
+.sorter.lots .slot{max-width:78px!important}
+.sorter.lots .board{grid-template-columns:repeat(auto-fit,minmax(62px,1fr))!important;gap:8px!important;padding:8px!important}
+.sorter.lots .tray{gap:8px!important;padding:8px!important}
 .sorter.big .slot{max-width:170px}
 .bigletter{font-family:var(--display);font-weight:800;font-size:5.5rem;line-height:1;color:var(--deep)}
 
@@ -713,6 +717,8 @@ body::before{display:none}
 .glyph u{text-decoration:none;color:var(--pitch)}
 @media (orientation:landscape) and (max-height:560px){
   .g-wrap.L-split .qopts.many{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.qopts.many.lots,.g-wrap.L-split .qopts.many.lots,.g-wrap.L-split.noart .qopts.many.lots{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.qopts.lots .qopt{min-height:44px!important;padding:4px 8px!important}
   .g-wrap.L-split .qopts.many .qopt{min-height:54px}
   .mem{grid-template-columns:repeat(var(--lcols,4),minmax(0,1fr));max-width:min(var(--mw,600px),calc((100vh - 150px) / var(--rows,2) * var(--lcols,4) * .8))}
   @supports (height:100dvh){.mem{max-width:min(100%,calc((100dvh - 150px) / var(--rows,2) * var(--lcols,4) * .8))}}
@@ -5229,8 +5235,8 @@ en:{
   mm_card:`Card {n}`, mm_pair:[`A match!`,`Brilliant memory!`,`Pair found!`], mm_pair_say:`A match!`, mm_hint:`Remember where they are!`,
   mm_all:`You found them all!`, mm_res:`You found all the pairs in {m} turns!`,
   ss_ask:`Put each shape in its space`, ss_say:`Drag each shape into the space where it fits.`, ss_coach:`Drag each shape to its space`,
-  ss_space:`{s} space`, ss_fit:[`Great fit!`,`Yes, a {s}!`,`Perfect!`], ss_tap:`Now tap its space`, ss_round:`All sorted!`, ss_all:`Every shape sorted!`,
-  ss_wrong:`That's a {s}. Find its space!`, ss_res:`You sorted every shape!`, ss_res0:`You sorted every shape perfectly!`,
+  ss_space:`{s} space`, ss_fit:[`Yes!`,`Brilliant!`,`Well done!`], ss_tap:`Now tap its space`, ss_round:`Well done!`, ss_all:`Brilliant!`, ss_pick:`That's a {s}`,
+  ss_wrong:`That's a {s}. Have another go!`, ss_res:`You sorted every shape!`, ss_res0:`You sorted every shape perfectly!`,
   q_or:`, or `, q_is:`Is it `, q_res:`You got {s} out of {n} right first time!`,
   q_count:`How many footballs?`, q_colour:`What colour is this shirt?`, q_shape:`What shape is this?`,
   q_add:`Criw Cicio score {a}, then {b} more. How many goals?`, q_after:`Which number comes after {n}?`,
@@ -5293,7 +5299,7 @@ cy:{
   mm_card:`Cerdyn {n}`, mm_pair:[`Pâr!`,`Cof gwych!`,`Pâr wedi'i ffeindio!`], mm_pair_say:`Pâr!`, mm_hint:`Cofia ble maen nhw!`,
   mm_all:`Ti wedi ffeindio'r cyfan!`, mm_res:`Ffeindiaist ti'r parau i gyd! Nifer y troeon: {m}.`,
   ss_ask:`Rho bob siâp yn ei le`, ss_say:`Llusga bob siâp i'r lle mae'n ffitio.`, ss_coach:`Llusga bob siâp i'w le`,
-  ss_space:`lle {s}`, ss_fit:[`Ffit wych!`,`Ie, {s}!`,`Perffaith!`], ss_tap:`Nawr tapia'r lle iawn`, ss_round:`Popeth yn ei le!`, ss_all:`Pob siâp yn ei le!`,
+  ss_space:`lle {s}`, ss_fit:[`Ffit wych!`,`Ie, {s}!`,`Perffaith!`], ss_tap:`Nawr tapia'r lle iawn`, ss_round:`Popeth yn ei le!`, ss_all:`Pob siâp yn ei le!`, ss_pick:`{s}`,
   ss_wrong:`{S} yw hwnna. Chwilia am ei le!`, ss_res:`Rhoist ti bob siâp yn ei le!`, ss_res0:`Rhoist ti bob siâp yn ei le yn berffaith!`,
   q_or:`, neu `, q_is:`Ai `, q_res:`Cefaist ti {s} allan o {n} yn gywir y tro cyntaf!`,
   q_count:`Sawl pêl-droed?`, q_colour:`Pa liw yw'r crys hwn?`, q_shape:`Pa siâp yw hwn?`,
@@ -5320,7 +5326,7 @@ const tl=(k,v)=>{const a=t(k);return (Array.isArray(a)?a[R(a.length)]:a).replace
 /* ---------------- sound ---------------- */
 let ac=null;
 function audio(){if(!saved.sound)return null;try{if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();adiag('context made, state '+ac.state+', '+ac.sampleRate+' Hz');ac.onstatechange=()=>adiag('context state → '+ac.state);}
-  if(ac.state!=='running'&&ac.state!=='closed'&&!gamePaused){const r=ac.resume();if(r&&r.catch)r.catch(e=>adiag('resume failed: '+e));}return ac;}catch(e){adiag('no sound engine: '+e);return null;}}
+  if(ac.state!=='running'&&ac.state!=='closed'&&!gamePaused&&!appAway){const r=ac.resume();if(r&&r.catch)r.catch(e=>adiag('resume failed: '+e));}return ac;}catch(e){adiag('no sound engine: '+e);return null;}}
 /* ---------------- iPhone / iPad sound ----------------
    iOS only lets sound start from a real tap (touchend / click, not the first touch), mutes the Web Audio engine when the
    ring/silent switch is on silent, and pauses it ("interrupted") after a call or switching apps. So:
@@ -5335,12 +5341,39 @@ let clipEl=null,clipElPrimed=false;
 /* (isIOS is worked out further down, with the other device checks) */
 const preferEl=()=>isIOS&&!navigator.audioSession;
 const SILENT_WAV='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-function unlockAudio(ev){ADIAG.gestures++;if(!saved.sound)return;audioSessionPlayback();const a=audio();
+function unlockAudio(ev){ADIAG.gestures++;appAway=false;if(!saved.sound)return;audioSessionPlayback();const a=audio();
   if(a){try{const b=a.createBuffer(1,1,22050),n=a.createBufferSource();n.buffer=b;n.connect(a.destination);n.start(0);ADIAG.unlocks++;}catch(e){adiag('unlock failed: '+e);}}
   /* prime one audio element during the tap, so the fallback player is allowed to play later */
   if(!clipElPrimed){try{clipEl=clipEl||new Audio();clipEl.setAttribute('playsinline','');clipEl.preload='auto';clipEl.src=SILENT_WAV;const pr=clipEl.play();clipElPrimed=true;if(pr&&pr.catch)pr.catch(e=>{clipElPrimed=false;adiag('audio element not allowed yet: '+e.name);});}catch(e){adiag('audio element: '+e);}}}
 ['touchend','click','keydown','pointerup'].forEach(t=>document.addEventListener(t,unlockAudio,{capture:true,passive:true}));
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&ac&&ac.state!=='running'&&!gamePaused){adiag('back in view, waking sound ('+ac.state+')');try{ac.resume();}catch(e){}}});
+/* ---------------- leaving and coming back to the app ----------------
+   Leaving (home button, switching apps, locking the phone): the music and voice stop straight away, and nothing
+   is allowed to wake the sound until they come back. Coming back: the sound wakes up again and the music carries on.
+   iOS sometimes holds the sound for a moment after an app returns, so it keeps trying for a few seconds
+   (and the first tap always wakes it too). */
+var appAway=false;let backTry=0;
+function goneQuiet(why){appAway=true;
+  /* a game in progress pauses (with its "tap to carry on" button), so it doesn't carry on without the child */
+  try{const z=$('#zone'),st=$('#zStage');if(session&&!session.dead&&!gamePaused&&z&&!z.hidden&&st&&!st.hidden)pauseGame();}catch(e){}
+  try{hush();}catch(e){}try{if(ac&&ac.state==='running'){adiag('left the app ('+why+'), pausing sound');ac.suspend();}}catch(e){}}
+function comeBack(why){
+  if(!appAway&&ac&&ac.state==='running')return;
+  appAway=false;adiag('back in the app ('+why+'), waking sound');
+  const n=++backTry;let tries=0;
+  const wake=()=>{if(n!==backTry||appAway||gamePaused||!ac)return;
+    if(ac.state!=='running'){try{audioSessionPlayback();const r=ac.resume();if(r&&r.catch)r.catch(()=>{});}catch(e){}}
+    if(ac.state==='running'){/* carry the music on from now, not from where it stopped */
+      try{if(BGM.on&&BGM.next<ac.currentTime)BGM.next=ac.currentTime+.1;}catch(e){}return;}
+    if(++tries<12)setTimeout(wake,500);};
+  wake();
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')goneQuiet('hidden');else comeBack('visible');});
+window.addEventListener('pagehide',()=>goneQuiet('pagehide'));
+window.addEventListener('pageshow',()=>{if(appAway)comeBack('pageshow');});
+document.addEventListener('pause',()=>goneQuiet('pause'),false);   /* the app wrapper's own "went to the background" event */
+document.addEventListener('resume',()=>comeBack('resume'),false);
+try{const AppP=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App;
+  if(AppP&&AppP.addListener)AppP.addListener('appStateChange',st=>{if(st&&st.isActive===false)goneQuiet('appStateChange');else comeBack('appStateChange');});}catch(e){}
 
 function tone(f,start,dur,type,vol,f2){const a=audio();if(!a)return;const tt=a.currentTime+start,o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,tt);if(f2)o.frequency.exponentialRampToValueAtTime(f2,tt+dur);g.gain.setValueAtTime(.0001,tt);g.gain.exponentialRampToValueAtTime(vol||.15,tt+.01);g.gain.exponentialRampToValueAtTime(.0001,tt+dur);o.connect(g).connect(a.destination);o.start(tt);o.stop(tt+dur+.05);}
 function whistle(start,dur){const a=audio();if(!a)return;const tt=a.currentTime+start,o=a.createOscillator(),l=a.createOscillator(),lg=a.createGain(),g=a.createGain();o.frequency.value=2800;l.frequency.value=28;lg.gain.value=180;l.connect(lg).connect(o.frequency);g.gain.setValueAtTime(.0001,tt);g.gain.exponentialRampToValueAtTime(.06,tt+.02);g.gain.setValueAtTime(.06,tt+dur-.05);g.gain.exponentialRampToValueAtTime(.0001,tt+dur);o.connect(g).connect(a.destination);o.start(tt);l.start(tt);o.stop(tt+dur+.05);l.stop(tt+dur+.05);}
@@ -5382,7 +5415,7 @@ function voiceList(k){try{return speechSynthesis.getVoices().map(v=>({v,s:voiceS
 if('speechSynthesis' in window){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice;}catch(e){}}
 const cySpeech=x=>lang!=='cy'?x:x.replace(/\s*·\s*/g,', ');
 const cleanSpeech=x=>cySpeech(String(x)).replace(/<[^>]+>/g,'').replace(/[“”"]/g,'').replace(/(?<![\p{L}])(\p{Lu}[\p{Lu}’']+)(?![\p{L}])/gu,w=>/^(TV|UK|OK|PE)$/.test(w)?w:w.toLowerCase()).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu,'').replace(/\s\+\s/g,', ').replace(/…/g,'.').replace(/\s{2,}/g,' ').trim();
-function say(text,queue){if(!saved.sound||!text||!('speechSynthesis' in window))return;if(lang==='cy'){playCy(text,queue);return;}if(typeof EN_CLIPS!=='undefined'&&cyPieces(text)){try{speechSynthesis.cancel();}catch(e){}playCy(text,queue);return;} /* Welsh: play a recording if there is one for this line, otherwise stay quiet */const v=voices[lang];const tx=cleanSpeech(text);if(!tx)return;try{const busy=speechSynthesis.speaking||speechSynthesis.pending;if(!queue)speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(tx);if(v){u.voice=v;u.lang=v.lang;}else u.lang=lang==='cy'?'cy-GB':'en-GB';{const nat=v&&/natural|neural|premium|enhanced|online/i.test(v.name);u.rate=nat?(lang==='cy'?.97:1):(lang==='cy'?.88:.93);u.pitch=nat?1:1.04;}u.volume=1;sayU=u;sayFor((tx.split(/\s+/).length/2.6+.35)*1000/u.rate,queue&&busy);
+function say(text,queue){if(!saved.sound||!text||appAway||!('speechSynthesis' in window))return;if(lang==='cy'){playCy(text,queue);return;}if(typeof EN_CLIPS!=='undefined'&&cyPieces(text)){try{speechSynthesis.cancel();}catch(e){}playCy(text,queue);return;} /* Welsh: play a recording if there is one for this line, otherwise stay quiet */const v=voices[lang];const tx=cleanSpeech(text);if(!tx)return;try{const busy=speechSynthesis.speaking||speechSynthesis.pending;if(!queue)speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(tx);if(v){u.voice=v;u.lang=v.lang;}else u.lang=lang==='cy'?'cy-GB':'en-GB';{const nat=v&&/natural|neural|premium|enhanced|online/i.test(v.name);u.rate=nat?(lang==='cy'?.97:1):(lang==='cy'?.88:.93);u.pitch=nat?1:1.04;}u.volume=1;sayU=u;sayFor((tx.split(/\s+/).length/2.6+.35)*1000/u.rate,queue&&busy);
   /* iPhones can swallow a line spoken straight after cancel(), so give it a moment */
   if(busy&&!queue)setTimeout(()=>{if(sayU===u)speechSynthesis.speak(u);},60);else speechSynthesis.speak(u);}catch(e){}}
 let sayU=null;
@@ -5548,6 +5581,7 @@ const MAXLV=10;
 /* 10 levels. Each one uses the difficulty of an old 20-level step, so level 10 is as hard as the old level 20:
    levels 1-3 (ages 2-3) = old 1, 3, 5 · levels 4-7 (ages 3-4) = old 7, 9, 12, 14 · levels 8-10 (ages 4-5) = old 16, 18, 20 */
 const LV10=[0,1,3,5,7,9,12,14,16,18,20];
+const lvNew=lv=>{const k=LV10.indexOf(lv);if(k>0)return k;let b=1;for(let j=1;j<LV10.length;j++)if(LV10[j]<=lv)b=j;return b;};
 const DIFF={easy:{name:{en:'Easy',cy:'Hawdd'},dots:1},medium:{name:{en:'Medium',cy:'Canolig'},dots:2},tricky:{name:{en:'Tricky',cy:'Heriol'},dots:3}};
 const CATEGORIES=[
   {id:'numbers',name:{en:'Numbers & Counting',cy:'Rhifau a Chyfrif'},blurb:{en:'Count, match and add up',cy:'Cyfrif, paru ac adio'},tint:'#dcecff',icon:()=>'<span class="glyph">123</span>'},
@@ -5832,7 +5866,7 @@ function mcq(api,o){
   function round(){
     miss=false;const q=o.make(i),n=q.opts.length,speak=q.speak||q.ask;
     api.stage.innerHTML='<div class="g-wrap L-split'+(q.art?'':' noart')+'"><p class="g-ask"><span>'+(q.askHtml||q.ask)+'</span>'+againBtn(speak)+'</p>'+(q.art?'<div class="pitchbox"><div class="qart">'+q.art+'</div></div>':'')+
-      '<div class="qopts'+(n>3?' many':'')+'" style="grid-template-columns:repeat('+optCols(n)+',minmax(0,1fr))">'+q.opts.map((x,k)=>'<button class="qopt '+(q.cls||'')+'" data-k="'+k+'"'+(x.ok?' data-ok="1"':'')+(x.aria?' aria-label="'+x.aria+'"':'')+'>'+(x.art||'')+(x.label!=null?'<span>'+x.label+'</span>':'')+'</button>').join('')+'</div></div>';
+      '<div class="qopts'+(n>3?' many':'')+(n>=5?' lots':'')+'" style="grid-template-columns:repeat('+optCols(n)+',minmax(0,1fr))">'+q.opts.map((x,k)=>'<button class="qopt '+(q.cls||'')+'" data-k="'+k+'"'+(x.ok?' data-ok="1"':'')+(x.aria?' aria-label="'+x.aria+'"':'')+'>'+(x.art||'')+(x.label!=null?'<span>'+x.label+'</span>':'')+'</button>').join('')+'</div></div>';
     $$('.qopt',api.stage).forEach(b=>b.addEventListener('click',()=>{
       const x=q.opts[+b.dataset.k];
       if(x.ok){if(!miss)score++;b.classList.add('right','bounce');$$('.qopt',api.stage).forEach(y=>y.style.pointerEvents='none');api.good(q.good||tl('praise'));api.progress(i+1,N);api.later(next,1700);}
@@ -5973,7 +6007,7 @@ function matchGame(api){
 function colourGame(api){
   const lv=api.level,N=10;
   const pool=COLOURS.slice(0,ramp(lv,[3,4,4,5,6,6,7,8,8,9,10,10,10,10,10,10,10,10,10,10]));
-  const nOpt=Math.min(pool.length,ramp(lv,[2,2,3,3,3,4,4,4,5,5,5,6,6,8,8,8,9,8,9,10]));
+  const nOpt=Math.min(pool.length,ramp(lv,[2,2,3,3,3,4,4,4,5,5,5,6,6,8,8,9,9,9,9,10]));
   const plain=lv>=13,stroop=lv>=18,big=lv<=3;
   let i=0,score=0,miss=false,last=null;
   const chip=c=>lang==='cy'?c.cyM:c.en;
@@ -6005,7 +6039,7 @@ function memoryGame(api){
     const deck=shuffle(pickN(PICS,pairs).flatMap(p=>[p,p])),cards=deck.length;
     const cols=cards<=4?2:cards<=6?3:cards<=16?4:6,rows=cards<=12?2:cards<=18?3:4,lcols=Math.ceil(cards/rows);
     let open=[],lock=false,here=0;
-    api.stage.innerHTML='<div class="g-wrap"><p class="g-ask">'+t('mm_ask')+(boards>1?' <small class="boardno">'+(board+1)+' / '+boards+'</small>':'')+againBtn(t('mm_say'))+'</p><div class="mem" style="--cols:'+cols+';--lcols:'+lcols+';--rows:'+rows+';--mw:'+(cols*(cols>4?100:125))+'px">'+deck.map((p,k)=>'<button class="mcard" data-k="'+k+'" data-p="'+p+'" aria-label="'+t('mm_card',{n:k+1})+'"><span class="flipper"><span class="face back">'+football()+'</span><span class="face front">'+emo(p)+'</span></span></button>').join('')+'</div></div>';
+    api.stage.innerHTML='<div class="g-wrap"><p class="g-ask">'+t('mm_ask')+againBtn(t('mm_say'))+'</p><div class="mem" style="--cols:'+cols+';--lcols:'+lcols+';--rows:'+rows+';--mw:'+(cols*(cols>4?100:125))+'px">'+deck.map((p,k)=>'<button class="mcard" data-k="'+k+'" data-p="'+p+'" aria-label="'+t('mm_card',{n:k+1})+'"><span class="flipper"><span class="face back">'+football()+'</span><span class="face front">'+emo(p)+'</span></span></button>').join('')+'</div></div>';
     $$('.mcard',api.stage).forEach(b=>b.addEventListener('click',()=>{
       if(lock||b.classList.contains('flip')||b.classList.contains('done'))return;
       b.classList.add('flip');api.sfx.flip();open.push(b);
@@ -6030,19 +6064,19 @@ const SHAPE_ORDER=['circle','square','triangle','star','heart','rectangle','oval
 function shapeGame(api){
   const lv=api.level;
   const POOL=SHAPE_ORDER.slice(0,ramp(lv,[3,3,3,4,5,5,6,6,7,8,8,9,10,10,10,10,10,10,10,10]));
-  const count=Math.min(POOL.length,ramp(lv,[2,2,3,3,3,4,4,4,4,5,5,5,6,6,6,7,7,8,8,8])),ROUNDS=Math.max(3,Math.ceil(10/count)),turn=lv>=18;
+  const count=Math.min(POOL.length,ramp(lv,[2,2,3,3,3,4,4,4,4,5,5,5,6,6,6,7,7,8,8,9])),ROUNDS=Math.max(3,Math.ceil(10/count)),turn=lv>=18;
   const paint=['#e5483f','#3b7ddd','#ffd23f','#45b549','#ff9233','#9b5fd0','#ff7eb6'],same=lv>=10,big=lv<=3;
   let r=0,mistakes=0;
   function round(){
     const set=pickN(POOL,count);let placed=0;
     const pcol=shuffle(paint);
-    api.stage.innerHTML='<div class="g-wrap"><p class="g-ask">'+t('ss_ask')+againBtn(t('ss_say'))+'</p><div class="sorter'+(big?' big':'')+'"><div class="board">'+shuffle(set).map(k=>'<div class="slot" data-s="'+k+'" role="button" tabindex="0" aria-label="'+t('ss_space',{s:sName(k)})+'"'+(turn&&k!=='circle'?' style="--turn:'+(30+R(4)*30)+'deg"':'')+'>'+outline(k)+'</div>').join('')+'</div><div class="tray">'+set.map((k,n)=>'<div class="piece" data-s="'+k+'" role="button" tabindex="0" aria-label="'+sName(k)+'">'+shape(k,same?'#3b7ddd':pcol[n%pcol.length])+'</div>').join('')+'</div></div></div>';
+    api.stage.innerHTML='<div class="g-wrap"><p class="g-ask">'+t('ss_ask')+againBtn(t('ss_say'))+'</p><div class="sorter'+(big?' big':'')+(count>=8?' lots':'')+'"><div class="board">'+shuffle(set).map(k=>'<div class="slot" data-s="'+k+'" role="button" tabindex="0" aria-label="'+t('ss_space',{s:sName(k)})+'"'+(turn&&k!=='circle'?' style="--turn:'+(30+R(4)*30)+'deg"':'')+'>'+outline(k)+'</div>').join('')+'</div><div class="tray">'+set.map((k,n)=>'<div class="piece" data-s="'+k+'" role="button" tabindex="0" aria-label="'+sName(k)+'">'+shape(k,same?'#3b7ddd':pcol[n%pcol.length])+'</div>').join('')+'</div></div></div>';
     dragDrop(api,$$('.piece',api.stage),$$('.slot',api.stage),{
       isFull:z=>!!z.dataset.full,
       accept:(p,z)=>p.dataset.s===z.dataset.s,
-      onPick:p=>{api.say(sName(p.dataset.s));api.coach(t('ss_tap'));},
+      onPick:p=>{api.say(t('ss_pick',{s:sName(p.dataset.s)}));api.coach(t('ss_tap'));},
       place(p,z){z.dataset.full='1';z.appendChild(p);fitToOutline(p,z);api.sfx.pop(placed+2);placed++;
-        if(placed===set.length){api.progress(r+1,ROUNDS);api.good(r+1<ROUNDS?t('ss_round')+' '+tl('praise'):t('ss_all'));api.later(next,1700);}
+        if(placed===set.length){api.progress(r+1,ROUNDS);api.good(r+1<ROUNDS?t('ss_round'):t('ss_all'));api.later(next,1700);}
         else{const m=tl('ss_fit',{s:sName(p.dataset.s)});api.coach(m);api.say(m);}},
       reject(p){mistakes++;const nm=sName(p.dataset.s);api.oops(t('ss_wrong',{s:nm,S:cap(nm)}));}
     });
@@ -6070,7 +6104,7 @@ const QUIZ_PIC=[
   {ask:{en:'Where do footballers play?',cy:"Ble mae chwaraewyr pêl-droed yn chwarae?"},opts:[['🏟️',{en:'Pitch',cy:'Cae'},1],['🛏️',{en:'Bed',cy:'Gwely'}],['🛒',{en:'Shop',cy:'Siop'}]]},
   {ask:{en:'What does a goalkeeper wear on their hands?',cy:"Beth mae gôl-geidwad yn ei wisgo ar ei ddwylo?"},opts:[['🧤',{en:'Gloves',cy:'Menig'},1],['🧦',{en:'Socks',cy:'Sanau'}],['👓',{en:'Glasses',cy:'Sbectol'}]]}];
 function quizGame(api){
-  const lv=api.level,N=10,nOpt=lv<=2?2:lv>=16?4:3;
+  const lv=api.level,N=10,nOpt=lv<=2?2:lv>=20?5:lv>=16?4:3;
   let bank=[];
   const balls=n=>'<div class="grp">'+Array.from({length:n},()=>football()).join('')+'</div>';
   const SH=SHAPE_ORDER.slice(0,ramp(lv,[3,3,3,4,4,5,5,6,6,6,8,8,10,10,10,10,10,10,10,10]));
@@ -6204,7 +6238,7 @@ const ballRow=(n,cls)=>'<div class="grp'+(cls?' '+cls:'')+'">'+Array.from({lengt
 /* PENALTY SHOOTOUT — pick the goal with the bigger (or, from L7, smaller) number */
 function penaltyGame(api){
   const lv=api.level,N=10;
-  const max=ramp(lv,[3,5,5,10,10,10,20,20,20,50,50,100,100,100,100,200,500,1000,1000,1000]),n=ramp(lv,[2,2,2,2,3,3,2,3,3,3,3,3,4,4,4,4,4,5,5,5]);
+  const max=ramp(lv,[3,5,5,10,10,10,20,20,20,50,50,100,100,100,100,200,500,1000,1000,1000]),n=ramp(lv,[2,2,2,2,3,3,3,3,4,4,4,4,4,5,5,5,5,5,5,6]);
   mcq(api,{rounds:N,make(i){
     const small=lv>=7&&i%2===1,nums=pickN(range(1,max),n),ans=small?Math.min(...nums):Math.max(...nums);
     return{ask:small?T('Kick it into the goal with the smaller number','Cicia hi i\'r gôl gyda\'r rhif lleiaf'):T('Kick it into the goal with the bigger number','Cicia hi i\'r gôl gyda\'r rhif mwyaf'),
@@ -6236,7 +6270,7 @@ function minusGame(api){
 
 /* NUMBER RUN — what number comes next? (counting on, in 2s, 5s, 10s and backwards) */
 function seqFor(lv){
-  const P=[[1,1,3,6],[1,1,3,6],[1,1,3,6],[1,1,8,10],[1,1,8,10],[1,1,8,10],[5,1,15,20],[5,1,15,20],[0,2,10,20],[0,2,14,24],[0,5,20,50],[0,10,40,100],[6,-1,20,1],[10,-2,20,0],[3,3,15,40],[3,3,30,0],[4,4,40,0],[30,-5,60,0],[50,-10,100,0],[20,2,50,0]][lv-1];
+  const P=[[1,1,3,6],[1,1,3,6],[1,1,5,8],[1,1,8,10],[1,1,8,10],[1,1,8,10],[5,1,15,20],[5,1,15,20],[0,2,10,20],[0,2,14,24],[0,5,20,50],[0,10,40,100],[6,-1,20,1],[10,-2,20,0],[3,3,15,40],[3,3,30,0],[4,4,40,0],[30,-5,60,0],[50,-10,100,0],[40,-3,60,0]][lv-1];
   const len=lv<=3?3:lv>=16?5:4;let start,step=P[1];
   if(step>0){start=P[0]+R(Math.max(1,P[2]-P[0]+1));if(step===5||step===10)start=Math.round(start/step)*step;if(step===2&&lv===10)start=start|1;}
   else{start=P[0]+R(P[2]-P[0]+1);if(start+step*len<P[3])start=P[3]-step*len;}
@@ -6270,7 +6304,7 @@ function kitCountGame(api){
 /* SHAPE SPOTTER — find the named shape; more shapes and choices each level, turned shapes from L11 */
 function spotterGame(api){
   const lv=api.level,N=10,pool=SHAPE_ORDER.slice(0,ramp(lv,[3,3,3,4,5,5,6,6,7,8,8,9,10,10,10,10,10,10,10,10]));
-  const n=Math.min(pool.length,ramp(lv,[2,2,3,3,3,4,4,4,4,5,5,5,6,6,6,7,7,8,8,8]));
+  const n=Math.min(pool.length,ramp(lv,[2,2,3,3,3,4,4,4,4,5,5,5,6,6,6,7,7,8,8,9]));
   const paint=['#e5483f','#3b7ddd','#ffd23f','#45b549','#ff9233','#9b5fd0'];
   mcq(api,{rounds:N,make(){
     const set=pickN(pool,n),k=set[0],nm=sName(k),nmR=lang==='cy'?(SHAPE_NAMES[k].cyR||nm):nm;
@@ -6284,7 +6318,7 @@ function spotterGame(api){
 function patternGame(api){
   const lv=api.level,N=10;
   const TYPES={AB:[0,1],AAB:[0,0,1],ABC:[0,1,2],ABB:[0,1,1],AABB:[0,0,1,1],ABCD:[0,1,2,3],AABC:[0,0,1,2],ABAC:[0,1,0,2],AABBC:[0,0,1,1,2],ABCDE:[0,1,2,3,4]};
-  const type=['AB','AB','AB','AAB','ABC','AB','AAB','ABC','ABB','AABB','AB','AAB','ABC','ABB','AABB','ABCD','AABC','ABAC','AABBC','ABCDE'][lv-1];
+  const type=['AB','AB','AB','AAB','AAB','AB','ABB','ABC','ABC','AABB','AB','AABB','ABC','ABCD','AABB','AABC','AABC','ABAC','AABBC','ABCDE'][lv-1];
   const n=ramp(lv,[2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,5,5,5,5,5]);
   const sets=[COLOURS.slice(0,6).map(c=>({k:c.en,art:()=>football(c.hex)})),
     SHAPE_ORDER.slice(0,6).map(s=>({k:s,art:()=>shape(s,'#3b7ddd')})),
@@ -6305,7 +6339,9 @@ function patternGame(api){
 /* ODD ONE OUT — groups of things; later levels: one different colour or shape */
 const ODD_GROUPS=[['⚽','🏉','🏀','🎾','🏐','⚾'],['🍎','🍌','🍊','🍇','🍓','🍐'],['🐶','🐱','🐷','🐮','🐑','🦆'],['🚗','🚌','🚐','🚲','🚂','✈️'],['👟','🧦','🧢','👕','🧤','🎩'],['☀️','🌧️','❄️','🌈','⛅','⚡']];
 function oddOneGame(api){
-  const lv=api.level,N=10,n=ramp(lv,[3,3,3,3,4,4,4,4,5,5,4,5,4,5,5,5,6,6,6,6]);
+  /* levels 1-10: 1-2 odd colour (3, 4 balls) · 3-6 odd picture (3, 4, 5, 6) · 7-8 odd shape, all different colours (5, 6) · 9-10 odd shape that shares a colour (6, 7) */
+  const L=lvNew(api.level),N=10,PLAN=[null,['col',3],['col',4],['grp',3],['grp',4],['grp',5],['grp',6],['shp',5],['shp',6],['shp2',6],['shp2',7]][L],mode=PLAN[0],n=PLAN[1];
+  const lv=mode==='grp'?1:mode==='col'?11:mode==='shp'?13:16;
   mcq(api,{rounds:N,make(){
     let items,odd;
     if(lv<=10){const[g1,g2]=pickN(ODD_GROUPS,2);items=pickN(g1,n-1).map(e=>({art:emo(e),k:e}));odd={art:emo(g2[R(g2.length)]),k:'odd'};}
@@ -6321,7 +6357,7 @@ function oddOneGame(api){
 const SHADOW_EASY=['⚽','🏉','🏆','👟','🧢','🐶','🦆','🚗','🍌','🎩','⭐','🦁','🐘','✈️','🚲','🔑'];
 const SHADOW_HARD=['🐶','🐱','🐰','🦊','🐻','🐷','🐮','🐸','🦁','🐵','🐔','🐧'];
 function shadowGame(api){
-  const lv=api.level,N=10,n=ramp(lv,[2,2,3,3,3,3,4,4,4,4,5,5,5,6,6,6,7,7,8,8]);
+  const lv=api.level,N=10,n=ramp(lv,[2,2,3,3,4,4,5,5,5,5,5,5,5,6,6,7,7,8,8,9]);
   const pool=lv<=10?SHADOW_EASY:SHADOW_HARD;
   mcq(api,{rounds:N,make(i){
     const set=pickN(pool,n),k=set[0],rev=lv>=8&&i%2===1;
@@ -6486,7 +6522,7 @@ function popGame(api){
 }
 
 /* KIT BAG SORT — drag each item into the right bag */
-const SORT_PLAN=[['col',2,4],['col',2,6],['type2',2,4],['type2',2,6],['col',3,6],['shape',2,6],['col',3,9],['shape',3,9],['type',3,9],['col',4,8],['shape',4,8],['type',4,8],['col',4,12],['shape',4,12],['kit',4,12],['col',5,15],['shape',5,15],['kit',4,16],['col',6,18],['shape',6,18]];
+const SORT_PLAN=[['col',2,4],['col',2,6],['col',2,6],['type2',2,6],['col',3,6],['shape',2,6],['col',3,9],['shape',3,9],['type',3,9],['col',4,8],['shape',4,8],['type',4,8],['col',4,12],['shape',4,12],['kit',4,12],['col',5,15],['shape',5,15],['shape',5,16],['col',6,18],['shape',6,18]];
 function sortGame(api){
   const lv=api.level,[kind,nb,ni]=SORT_PLAN[lv-1],ROUNDS=Math.max(2,Math.ceil(10/ni));
   let r=0,mistakes=0;
@@ -6527,7 +6563,7 @@ function puzzleScenes(){
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><rect width="300" height="300" fill="#fff1bf"/><g fill="#ffd23f" stroke="#c99a00" stroke-width="5" stroke-linejoin="round"><path d="M95 60 H205 V110 Q205 170 150 180 Q95 170 95 110 Z"/><path d="M95 75 Q55 75 60 110 Q65 140 100 140" fill="none"/><path d="M205 75 Q245 75 240 110 Q235 140 200 140" fill="none"/><rect x="135" y="178" width="30" height="40"/><rect x="105" y="215" width="90" height="25" rx="6"/></g><g fill="#45b549">'+[[40,60],[260,260],[40,250],[262,50]].map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="16"/>').join('')+'</g><text x="150" y="275" text-anchor="middle" font-family="Arial Rounded MT Bold, sans-serif" font-weight="800" font-size="26" fill="#2f6b1a">CRIW CICIO</text></svg>'];
 }
 function puzzleGame(api){
-  const lv=api.level,G2=[[1,2],[1,3],[2,2],[2,2],[2,3],[2,3],[2,3],[3,3],[3,3],[3,3],[3,4],[3,4],[4,4],[4,4],[4,4],[4,5],[4,5],[5,5],[5,5],[5,5]][lv-1],[rows,cols]=G2,ghost=true;
+  const lv=api.level,G2=[[1,2],[1,3],[2,2],[2,2],[2,3],[2,3],[3,3],[3,3],[3,4],[3,4],[3,4],[4,4],[4,4],[4,5],[4,5],[5,5],[5,5],[5,5],[5,5],[5,6]][lv-1],[rows,cols]=G2,ghost=lv<18;
   const ROUNDS=Math.max(2,Math.ceil(10/(rows*cols))),scenes=puzzleScenes();let r=0,mistakes=0;
   function round(){
     const img="url('data:image/svg+xml,"+encodeURIComponent(scenes[(lv-1+r)%scenes.length]).replace(/'/g,'%27')+"')",n=rows*cols;let placed=0;
@@ -7299,7 +7335,7 @@ function bgmScreen(){
 /* start as soon as the app opens: inside the iPhone app sound is allowed without a tap, so wake the sound
    engine straight away; a web browser still waits for the first tap, which the tap unlock handles */
 let bgmWake=0;
-setInterval(()=>{const w=bgmScreen();if(!w)return;
+setInterval(()=>{if(appAway)return;const w=bgmScreen();if(!w)return;
   if(!bgmWake||Date.now()-bgmWake>1500){const a0=audio();if(a0&&a0.state!=='running'){bgmWake=Date.now();try{audioSessionPlayback();const pr=a0.resume();if(pr&&pr.catch)pr.catch(()=>{});}catch(e){}}}
   if(BGM.on&&(BGM.scr===w||!BGM.scr))return; /* already playing it, or a game's own music is playing */
   const a=audio();if(!a||a.state!=='running')return;

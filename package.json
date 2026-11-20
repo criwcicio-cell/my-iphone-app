@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/criwcicio-cell/my-iphone-app#readme",
   "dependencies": {
+    "@capacitor-community/media": "^9.1.0",
     "@capacitor/core": "^8.6.2",
+    "@capacitor/filesystem": "^8.1.5",
     "@capacitor/ios": "^8.6.2",
     "cordova-plugin-purchase": "^13.20.0"
   },
