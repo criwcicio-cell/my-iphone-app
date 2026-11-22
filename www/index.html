@@ -2881,8 +2881,12 @@ html.embedded #site{position:relative;inset:auto}
 @keyframes aBnR2{0%{transform:rotate(69.5deg)}8%{transform:rotate(60deg)}22%,62%{transform:rotate(28deg)}84%,100%{transform:rotate(69.5deg)}}
 /* the sun's turning rays never cover the instructions: they are hidden on every intro page, and on phones
    (where the sun sits behind the boxes and iPhones can draw the turning rays on top) */
-html.z-intro #zone > .amb i:nth-child(1)::before,#zone:has(#zIntro:not([hidden])) > .amb i:nth-child(1)::before{display:none!important}
-@media (max-width:700px),(max-height:520px){#zone > .amb i:nth-child(1)::before{display:none!important}}
+/* the turning sun rays behind the game pages are switched off everywhere (they made the how-to-play text hard to read),
+   and every game picture on a how-to-play page keeps its sun still with no turning rays */
+#zone > .amb i:nth-child(1)::before{display:none!important;animation:none!important}
+html.z-intro #zone > .amb i::before{animation:none!important}
+#zIntro .e-sun::before,#zIntro [class*="-sun"] b,#zIntro [class*="-sun"]::before,#zIntro [class*="-sun"]::after{display:none!important;animation:none!important}
+#zIntro [class*="-sun"]{animation-name:none!important;rotate:none!important}
 
 </style>
 <style>
@@ -6014,13 +6018,13 @@ function countGame(api){
     const opts=numOpts(total,nOpt,1,Math.max(max,total+2));
     api.stage.innerHTML='<div class="g-wrap L-split"><p class="g-ask">'+ask+againBtn(speak)+'</p><div class="pitchbox"><div class="field'+(big?' big':total>10?' small':'')+'">'+(three?grp(a)+'<span class="plus">+</span>'+grp(b)+'<span class="plus">+</span>'+grp(c3):adding?grp(a)+'<span class="plus">+</span>'+grp(b):grp(total))+'</div></div><p class="tiphint">'+t('cf_tip')+'</p><div class="opts">'+opts.map(v=>'<button class="numbtn" data-v="'+v+'"'+(v===total?' data-ok="1"':'')+'>'+v+'</button>').join('')+'</div></div>';
     let c=0;
-    $$('.cball',api.stage).forEach(btn=>btn.addEventListener('click',()=>{if(btn.dataset.n)return;c++;btn.dataset.n=c;btn.querySelector('.badge').textContent=c;api.sfx.pop(c);}));
+    $$('.cball',api.stage).forEach(btn=>btn.addEventListener('click',()=>{if(btn.dataset.n)return;c++;btn.dataset.n=c;btn.querySelector('.badge').textContent=c;api.sfx.pop(c);api.say(String(c));}));
     $$('.numbtn',api.stage).forEach(btn=>btn.addEventListener('click',()=>{
       const v=+btn.dataset.v;
       if(v===total){
         if(!miss)score++;btn.classList.add('right','bounce');$$('.numbtn',api.stage).forEach(x=>x.style.pointerEvents='none');
         $$('.cball',api.stage).forEach((x,k)=>{x.style.animationDelay=(k*30)+'ms';x.classList.add('bounce');});
-        api.good(tl('praise')+' '+total+'!');api.progress(i+1,N);api.later(next,1700);
+        api.good(total+'! '+tl('praise'));api.progress(i+1,N);api.later(next,1900);
       }else{miss=true;btn.classList.add('wrong','shake');api.oops(t('cf_wrong',{v}));}
     }));
     api.coach(ask);api.say(speak,true);
