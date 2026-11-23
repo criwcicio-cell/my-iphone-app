@@ -2011,6 +2011,7 @@ html #paySheet .sheet{border-radius:28px;max-height:calc(100% - 32px)}
 @media (orientation:portrait){
   .kitwrap .kit.copy{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);grid-template-rows:minmax(0,1fr) auto auto;gap:8px}
   .kit.copy .kit-tools{display:contents}
+  .kitwrap .kit.copy:not(:has(.kv + .kv)){grid-template-columns:minmax(0,1.3fr) minmax(0,.9fr)}
   .kit.copy .kit-side{grid-column:1;grid-row:1}
   .kit.copy .kit-tools > .kit-target{grid-column:2;grid-row:1;flex-direction:column;align-items:stretch;padding:8px 6px}
   .kit.copy .kit-target h4{max-width:none;text-align:center}
@@ -2067,6 +2068,13 @@ html #paySheet .sheet{border-radius:28px;max-height:calc(100% - 32px)}
   #zDone .done-btns{gap:8px}
   #zDone .done-btns .btn{min-height:46px}
 }
+
+/* home: the football and the rugby ball swap places */
+.hero-scene .b1{left:68%!important}
+.hero-scene .rb{left:9%!important}
+@media (orientation:landscape) and (max-height:560px){.hero-scene .b1{left:41%!important}.hero-scene .rb{left:9%!important}}
+
+#gameCount,#moveCount{display:none!important}
 </style>
 
 <style>
@@ -5183,8 +5191,8 @@ html.mv-full #zStage .mv-wrap.pn-strip .mv-panel #mvCards button,html.mv-full #z
 
     <div id="gamesPage" hidden>
     <section class="wrap sec" id="games">
-        <div class="sec-head"><div class="games-title"><button class="back-home" data-go="welcome" data-ta="back_welcome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 data-t="all_h"></h2></div><p id="gameCount"></p></div>
-        <div class="pagetabs" role="group"><button data-go="games" data-tab aria-pressed="false"><span data-t="tab_learn"></span></button><button data-go="moves" data-tab aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="4.5" r="2"/><path d="M9 21l2.5-6 3 2.5V22M7 12l3-3.5 4 1.5 2.5 3.5 2.5.5M11.5 15 10 9"/></svg><span data-t="tab_move"></span></button></div>
+        <div class="sec-head"><div class="games-title"><button class="back-home" data-go="welcome" data-ta="back_welcome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 data-t="all_h"></h2></div><p id="gameCount" hidden></p></div>
+        <div class="pagetabs" role="group"><button data-go="games" data-tab aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10.2 8.8v4.4l3.6-2.2z" fill="currentColor" stroke-width="1.6"/><path d="M11 18.5h2"/></svg><span data-t="tab_learn"></span></button><button data-go="moves" data-tab aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="4.5" r="2"/><path d="M9 21l2.5-6 3 2.5V22M7 12l3-3.5 4 1.5 2.5 3.5 2.5.5M11.5 15 10 9"/></svg><span data-t="tab_move"></span></button></div>
         <div class="filters" id="filters" hidden></div>
         <div class="grid" id="allGrid"></div>
       </section>
@@ -5197,8 +5205,8 @@ html.mv-full #zStage .mv-wrap.pn-strip .mv-panel #mvCards button,html.mv-full #z
     </div>
     <div id="movePage" hidden>
       <section class="wrap sec" id="moves">
-        <div class="sec-head"><div class="games-title"><button class="back-home" data-go="welcome" data-ta="back_welcome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 data-t="moves_h"></h2></div><p id="moveCount"></p></div>
-        <div class="pagetabs" role="group"><button data-go="games" data-tab aria-pressed="false"><span data-t="tab_learn"></span></button><button data-go="moves" data-tab aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="4.5" r="2"/><path d="M9 21l2.5-6 3 2.5V22M7 12l3-3.5 4 1.5 2.5 3.5 2.5.5M11.5 15 10 9"/></svg><span data-t="tab_move"></span></button></div>
+        <div class="sec-head"><div class="games-title"><button class="back-home" data-go="welcome" data-ta="back_welcome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 data-t="moves_h"></h2></div><p id="moveCount" hidden></p></div>
+        <div class="pagetabs" role="group"><button data-go="games" data-tab aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10.2 8.8v4.4l3.6-2.2z" fill="currentColor" stroke-width="1.6"/><path d="M11 18.5h2"/></svg><span data-t="tab_learn"></span></button><button data-go="moves" data-tab aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="4.5" r="2"/><path d="M9 21l2.5-6 3 2.5V22M7 12l3-3.5 4 1.5 2.5 3.5 2.5.5M11.5 15 10 9"/></svg><span data-t="tab_move"></span></button></div>
         <p class="moves-lede" data-t="moves_p"></p>
         <div class="grid" id="moveGrid"></div>
       </section>
@@ -5337,10 +5345,10 @@ en:{
   sound_on_aria:`Sound is on. Tap to turn off.`, sound_off_aria:`Sound is off. Tap to turn on.`, sound_said:`Sound on!`,
   hero_h1:`Fun little games.<br><em>Big little learners.</em>`,
   lede:`Learning games for children, with a football or rugby twist in every one.`, lede2:`Made by Criw Cicio, the family-run club for little kickers.`,
-  start:`Educational games`, site_btn:`Classes & Parties`, voice_btn:`Voice`, moves_btn:`Physical Games`, tab_learn:`Learning games`, tab_move:`Physical games`, moves_h:`Physical Games`, moves_p:`Get up and move! Clear a space, watch the coach and copy the moves.`, stickers_h:`Your sticker book`, stickers_p:`Finish a game to win its sticker.`, back_welcome:`Back to the start`, add_phone:`Add to iPhone home screen`, add_phone_short:`Add to phone`, add_phone_btn:`Add to phone`,
+  start:`Educational games`, site_btn:`Classes & Parties`, voice_btn:`Voice`, moves_btn:`Physical Games`, tab_learn:`Educational games`, tab_move:`Physical games`, moves_h:`Physical Games`, moves_p:`Get up and move! Clear a space, watch the coach and copy the moves.`, stickers_h:`Your sticker book`, stickers_p:`Finish a game to win its sticker.`, back_welcome:`Back to the start`, add_phone:`Add to iPhone home screen`, add_phone_short:`Add to phone`, add_phone_btn:`Add to phone`,
   bubble:`Shwmae!<br>Let's play!`,
   learners_h:`Who's playing today?`, learners_p:`Pick a learner to see the best games for them.`,
-  topics_h:`Explore by topic`, all_h:`All games`, count:`{a} of {b} games`,
+  topics_h:`Explore by topic`, all_h:`Educational games`, count:`{a} of {b} games`,
   games_n:`{n} games`, back_games:`Games`, back_all:`Back to all games`, level_n:`Level {n}`, levels_n:`10 levels`, free_design:`Free design`, level_done:`Level {n} done!`, play_level:`Play level {n}`, game_1:`1 game`, min:`min`, stars_aria:`{n} stars`,
   f_age:`Age`, f_topic:`Topic`, f_level:`Level`, f_all:`All`,
   empty:`No games match those choices yet.`, show_all:`Show all games`,
@@ -5401,10 +5409,10 @@ cy:{
   sound_on_aria:`Mae'r sain ymlaen. Tapiwch i'w diffodd.`, sound_off_aria:`Mae'r sain i ffwrdd. Tapiwch i'w throi ymlaen.`, sound_said:`Sain ymlaen!`,
   hero_h1:`Gemau hwyliog.<br><em>Dysgwyr bach, camau mawr.</em>`,
   lede:`Gemau dysgu i blant.`, lede2:`Wedi'u creu gan Griw Cicio.`,
-  start:`Gemau addysgiadol`, site_btn:`Dosbarthiadau a Phartion`, voice_btn:`Llais`, moves_btn:`Gemau Symud`, tab_learn:`Gemau dysgu`, tab_move:`Gemau symud`, moves_h:`Gemau Symud`, moves_p:`Coda a symuda! Cliria le, gwylia'r hyfforddwr a chopïa'r symudiadau.`, stickers_h:`Dy lyfr sticeri`, stickers_p:`Gorffen gêm i ennill ei sticer.`, back_welcome:`Yn ôl i'r dechrau`, add_phone:`Ychwanegu i'r iPhone`, add_phone_short:`I'r ffôn`, add_phone_btn:`Ychwanegu i'r ffôn`,
+  start:`Gemau addysgiadol`, site_btn:`Dosbarthiadau a Phartion`, voice_btn:`Llais`, moves_btn:`Gemau Symud`, tab_learn:`Gemau addysgiadol`, tab_move:`Gemau symud`, moves_h:`Gemau Symud`, moves_p:`Coda a symuda! Cliria le, gwylia'r hyfforddwr a chopïa'r symudiadau.`, stickers_h:`Dy lyfr sticeri`, stickers_p:`Gorffen gêm i ennill ei sticer.`, back_welcome:`Yn ôl i'r dechrau`, add_phone:`Ychwanegu i'r iPhone`, add_phone_short:`I'r ffôn`, add_phone_btn:`Ychwanegu i'r ffôn`,
   bubble:`Shwmae!<br>Dewch i chwarae!`,
   learners_h:`Pwy sy'n chwarae heddiw?`, learners_p:`Dewiswch ddysgwr i weld y gemau gorau iddyn nhw.`,
-  topics_h:`Archwilio fesul pwnc`, all_h:`Pob gêm`, count:`{a} o {b} gêm`,
+  topics_h:`Archwilio fesul pwnc`, all_h:`Gemau addysgiadol`, count:`{a} o {b} gêm`,
   games_n:`{n} gêm`, back_games:`Gemau`, back_all:`Yn ôl i bob gêm`, level_n:`Lefel {n}`, levels_n:`10 lefel`, free_design:`Dylunio rhydd`, level_done:`Lefel {n} wedi'i gorffen!`, play_level:`Chwarae lefel {n}`, game_1:`1 gêm`, min:`munud`, stars_aria:`{n} seren`,
   f_age:`Oed`, f_topic:`Pwnc`, f_level:`Lefel`, f_all:`Pob un`,
   empty:`Does dim gemau'n cyfateb i'r dewisiadau hyn eto.`, show_all:`Dangos pob gêm`,
@@ -6326,35 +6334,17 @@ function kitSVG(k,interactive){
   const pst=' stroke="#2f352b" stroke-opacity=".35" stroke-width="2"';
   const pat=k.pattern==='stripes'?'<g clip-path="url(#'+id+')"'+r('stripes')+' fill="'+k.stripes+'">'+[78,104,130,156].map(x=>'<rect x="'+x+'" y="10" width="13" height="170"'+pst+'/>').join('')+'</g>'
           :k.pattern==='hoops'?'<g clip-path="url(#'+id+')"'+r('stripes')+' fill="'+k.stripes+'">'+[48,84,120,156].map(y=>'<rect x="60" y="'+y+'" width="120" height="17"'+pst+'/>').join('')+'</g>':'';
-  const spots=(k.spots||[]).length?'<g clip-path="url(#'+id+')">'+k.spots.map((d,i)=>'<circle'+(interactive?' data-spot="'+i+'"':'')+' cx="'+d.x+'" cy="'+d.y+'" r="9" fill="'+d.c+'"'+pst+'/>').join('')+'</g>':'';
+  const spots=(k.spots||[]).length?'<g clip-path="url(#'+id+')">'+k.spots.map((d,i)=>interactive?'<g data-spot="'+i+'"><circle cx="'+d.x+'" cy="'+d.y+'" r="13" fill="'+d.c+'" stroke="#2f352b" stroke-opacity=".75" stroke-width="2.5"'+(d.c==='#ffffff'?' stroke-dasharray="4 3"':'')+'/><circle cx="'+d.x+'" cy="'+d.y+'" r="18" fill="transparent"/></g>':'<circle cx="'+d.x+'" cy="'+d.y+'" r="13" fill="'+d.c+'"'+pst+'/>').join('')+'</g>':'';
   const numCol=k.number||'#ffffff';
-  const num=back&&k.num!=null?'<text'+r('number')+' x="120" y="122" text-anchor="middle" font-family="Baloo 2, Arial Rounded MT Bold, sans-serif" font-weight="800" font-size="58" fill="'+numCol+'" stroke="#2f352b" stroke-opacity=".6" stroke-width="2.5" paint-order="stroke">'+k.num+'</text>':'';
+  const num=back&&k.num!=null?'<text'+r('number')+' x="120" y="122" text-anchor="middle" font-family="Baloo 2, Arial Rounded MT Bold, sans-serif" font-weight="800" font-size="'+((k.spots||[]).length?46:58)+'" fill="'+numCol+'" stroke="#2f352b" stroke-opacity=".6" stroke-width="2.5" paint-order="stroke">'+k.num+'</text>':'';
   return '<svg viewBox="0 0 240 300" role="img" aria-label="'+t('kd_kit')+(back?' ('+T('back','cefn')+')':'')+'"><defs><clipPath id="'+id+'"><path d="'+body+'"/></clipPath></defs>'+
     '<path'+r('sleeveL')+' d="M70 30 L25 70 L48 108 L69 92 Z" fill="'+(k.sleeveL||k.sleeves)+'"'+st+'/><path'+r('sleeveR')+' d="M170 30 L215 70 L192 108 L171 92 Z" fill="'+(k.sleeveR||k.sleeves)+'"'+st+'/>'+
-    '<path'+r('body')+' d="'+body+'" fill="'+k.body+'"/>'+pat+spots+'<path d="'+body+'" fill="none"'+st+' pointer-events="none"/>'+
+    '<path'+r('body')+' d="'+body+'" fill="'+k.body+'"/>'+pat+'<path d="'+body+'" fill="none"'+st+' pointer-events="none"/>'+
     (back?'<path'+r('collar')+' d="M95 20 Q120 30 145 20 L138 15 Q120 24 102 15 Z" fill="'+k.collar+'"'+st+'/>'
          :'<path'+r('collar')+' d="M95 20 Q120 40 145 20 L138 15 Q120 30 102 15 Z" fill="'+k.collar+'"'+st+'/>'+(k.noCrest?'':crest(145,46,22)))+
-    num+
+    num+spots+
     '<path'+r('shorts')+' d="M72 178 L168 178 L178 240 L128 240 L120 214 L112 240 L62 240 Z" fill="'+k.shorts+'"'+st+'/>'+
     '<rect'+r('sockL')+' x="70" y="250" width="36" height="44" rx="8" fill="'+(k.sockL||k.socks)+'"'+st+'/><rect'+r('sockR')+' x="134" y="250" width="36" height="44" rx="8" fill="'+(k.sockR||k.socks)+'"'+st+'/></svg>';
-}
-/* the football character wearing a kit (used for the kit to copy) */
-function kitPlayer(k){
-  const back=k.view==='back',D='#2a3125';
-  let sv=kitSVG(k,false);
-  sv=sv.replace('viewBox="0 0 240 300"','viewBox="-4 -96 248 410"');
-  const legs='<rect x="80" y="226" width="16" height="32" rx="6" fill="'+D+'"/><rect x="144" y="226" width="16" height="32" rx="6" fill="'+D+'"/>';
-  const face=back?'':'<g><ellipse cx="103" cy="-40" rx="8" ry="11" fill="'+D+'"/><ellipse cx="137" cy="-40" rx="8" ry="11" fill="'+D+'"/><circle cx="106" cy="-45" r="3.2" fill="#fff"/><circle cx="140" cy="-45" r="3.2" fill="#fff"/>'+
-    '<circle cx="88" cy="-22" r="7" fill="#ff9fb0" opacity=".7"/><circle cx="152" cy="-22" r="7" fill="#ff9fb0" opacity=".7"/><path d="M104 -20 Q120 0 136 -20 Z" fill="'+D+'"/><path d="M112 -12 Q120 -5 128 -12 Q120 -16 112 -12Z" fill="#ff7f8f"/></g>';
-  const hid='kh'+(uid++);
-  const head='<defs><clipPath id="'+hid+'"><circle cx="120" cy="-38" r="50"/></clipPath></defs><circle cx="120" cy="-38" r="50" fill="#fff"/>'+
-    '<g clip-path="url(#'+hid+')" fill="#2a3125"><polygon points="'+poly(5,13,120,-80,-90)+'"/><polygon points="'+poly(5,13,74,-36,-18)+'"/><polygon points="'+poly(5,13,166,-36,198)+'"/><polygon points="'+poly(5,12,97,5,-90)+'"/><polygon points="'+poly(5,12,143,5,-90)+'"/>'+(back?'<polygon points="'+poly(5,15,120,-38,-90)+'"/>':'')+'</g>'+
-    '<circle cx="120" cy="-38" r="50" fill="none" stroke="#24303a" stroke-width="3.5"/>'+face;
-  const hands='<circle cx="34" cy="95" r="12" fill="#fff" stroke="'+D+'" stroke-width="3"/><circle cx="206" cy="95" r="12" fill="#fff" stroke="'+D+'" stroke-width="3"/>';
-  const boots='<ellipse cx="86" cy="300" rx="24" ry="11" fill="#5aa832" stroke="#1f3a17" stroke-width="2.5"/><ellipse cx="154" cy="300" rx="24" ry="11" fill="#5aa832" stroke="#1f3a17" stroke-width="2.5"/>';
-  sv=sv.replace('</defs>','</defs>'+legs);
-  sv=sv.slice(0,-6)+hands+boots+head+'</svg>';
-  return sv;
 }
 const KIT_PARTS=[['body'],['body'],['body','shorts'],['body','shorts'],['body','shorts','socks'],['body','shorts','socks'],['body','shorts','socks','sleeves'],['body','shorts','socks','sleeves'],['body','shorts','socks','sleeves','collar'],['body','shorts','socks','sleeves','collar'],['body','shorts','socks','pattern'],['body','shorts','socks','sleeves','pattern'],['body','shorts','socks','num'],['body','shorts','socks','sleeves','pattern','num'],['body','shorts','socks','sleeves','collar','pattern','num']];
 function kitGame(api){
@@ -6391,16 +6381,28 @@ function kitBoard(api,run){
     /* each sleeve and each sock is painted on its own; the coach's pair match */
     target.sleeveL=target.sleeveR=target.sleeves;target.sockL=target.sockR=target.socks;
     if(extras.includes('stripes')||extras.includes('hoops')){target.pattern=extras.includes('hoops')?'hoops':'stripes';target.stripes=cols[4]===target.body?cols[5]:cols[4];k.pattern=target.pattern;k.stripes='#ffffff';}
-    if(extras.includes('spots')){const n=[0,0,0,0,0,3,0,0,5,0,6][KL]||4,sc=cols[5]===target.body?cols[4]:cols[5],pts=[];
-      for(let g=0;pts.length<n&&g<400;g++){const x=82+R(78),y=50+R(108);if(x>132&&y<76)continue;if(pts.every(q=>Math.hypot(q.x-x,q.y-y)>24))pts.push({x,y,c:sc});}
-      target.spots=pts;target.spotC=sc;k.spots=[];}
+    if(extras.includes('spots')){const n=[0,0,0,0,0,3,0,0,5,0,6][KL]||4,pts=[];
+      /* harder levels mix the spot colours: level 8 two colours, level 10 three */
+      const nCol=KL>=10?3:KL>=8?2:1,spotCols=pickN(PAL.filter(c=>c!==target.body&&c!=='#ffffff'&&c!==target.stripes),nCol);
+      if(extras.includes('num')){
+        /* set places round the shirt that keep clear of the number on the back */
+        const slots=shuffle([[92,58],[114,62],[80,98],[160,98],[80,128],[160,128],[90,153],[120,155],[150,153]]);
+        slots.slice(0,n).forEach(([x,y])=>pts.push({x:x+R(5)-2,y:y+R(5)-2}));
+      }else{
+        for(let g=0;pts.length<n&&g<600;g++){const x=86+R(68),y=52+R(104);if(x>126&&y<78)continue;if(pts.every(q=>Math.hypot(q.x-x,q.y-y)>34))pts.push({x,y});}
+      }
+      pts.forEach((q,ii)=>q.c=spotCols[ii%nCol]);shuffle(pts);
+      target.spots=pts;target.spotC=spotCols[0];k.spots=pts.map(q=>({x:q.x,y:q.y,c:'#ffffff'}));}
     if(extras.includes('num')){target.num=1+R(KL<=7?9:20);target.number=[cols[4],cols[5],'#ffffff'].find(c=>c!==target.body&&c!==target.stripes)||'#ffffff';k.number='#ffffff';k.num=null;}
   }
+  /* the back of the kit is painted on its own: it starts blank */
+  const kb=Object.assign({},k,{view:'back',num:null,number:'#ffffff',spots:k.spots?k.spots.map(q=>({x:q.x,y:q.y,c:'#ffffff'})):undefined});
+  let side='front';const K=()=>side==='back'?kb:k;
   let brush='#e5483f',taps=0;
-  const hideAfter=free?0:([0,0,0,0,0,0,0,20,15,12,10][lvNew(lv)]||0);
-  const tgtPanel=free?'':'<div class="panel kit-target"><h4>'+(run?(run.r+1)+' / '+run.N+' · ':'')+(hideAfter?T('Remember this kit!',"Cofia'r cit yma!"):T('Copy this kit','Copïa\'r cit yma'))+'</h4><span class="tgt" id="kitTgt">'+(target&&target.num!=null?'<span class="kv">'+kitPlayer(target)+'<b>'+T('Front','Blaen')+'</b></span><span class="kv">'+kitPlayer(Object.assign({},target,{view:'back'}))+'<b>'+T('Back','Cefn')+'</b></span>':'<span class="kv">'+kitPlayer(target)+'</span>')+'</span>'+(hideAfter?'<button class="btn ghost peek" id="kitPeek" hidden>👀 '+T('Peek','Cip')+'</button>':'')+'</div>';
+  const hideAfter=0; /* the kit to copy stays on screen on every level */
+  const tgtPanel=free?'':'<div class="panel kit-target"><h4>'+(run?(run.r+1)+' / '+run.N+' · ':'')+(hideAfter?T('Remember this kit!',"Cofia'r cit yma!"):T('Copy this kit','Copïa\'r cit yma'))+'</h4><span class="tgt" id="kitTgt">'+(target&&target.num!=null?'<span class="kv">'+kitSVG(target,false)+'<b>'+T('Front','Blaen')+'</b></span><span class="kv">'+kitSVG(Object.assign({},target,{view:'back'}),false)+'<b>'+T('Back','Cefn')+'</b></span>':'<span class="kv">'+kitSVG(target,false)+'</span>')+'</span>'+(hideAfter?'':'')+'</div>';
   api.stage.innerHTML='<div class="g-wrap kitwrap"><div class="kit-rot" role="alert"><div><span class="kr-ph">📱</span><h3>'+T('Turn your phone upright','Tro dy ffôn i fyny')+'</h3><p>'+T('Kit Designer is played with the phone standing up.',"Mae'r Dylunydd Cit yn cael ei chwarae gyda'r ffôn yn sefyll i fyny.")+'</p><button class="btn ghost kr-back">'+T('Back to the games','Yn ôl i’r gemau')+'</button></div></div><p class="g-ask">'+(free?t('kd_ask'):T('Copy the coach\'s kit','Copïa git yr hyfforddwr'))+againBtn(free?t('kd_say'):T('Make your kit look the same as the coach\'s kit.','Gwna i dy git di edrych yr un fath â chit yr hyfforddwr.'))+'</p><div class="kit'+(free?'':' copy')+(target&&(target.spots||target.num!=null||target.pattern!=='plain')?' xtra':'')+'"><div class="kit-side"><div class="kit-stage" id="kitStage"></div><div class="kit-over">'+
-    (target&&target.spots?'<button class="btn ghost kxb" id="kSpot" aria-pressed="false">⚪ '+T('Add spots','Smotiau')+' <b id="kSpotN">0</b></button>':'<span></span>')+
+    '<span></span>'+
     (target&&target.num!=null?'<button class="btn ghost kxb" id="kTurn" hidden>🔄 '+T('Turn round','Troi rownd')+'</button>':'')+'</div>'+
     (target&&target.num!=null?'<span class="kview" id="kView">'+T('Front','Blaen')+'</span>':'')+'</div><div class="kit-tools">'+tgtPanel+
     '<div class="panel"><h4>'+t('kd_1')+'</h4><div class="swatches">'+PAL.map(c=>'<button class="swatch" data-c="'+c+'" style="--c:'+c+'" aria-label="'+NAMES[c]+'" aria-pressed="'+(c===brush)+'"></button>').join('')+'</div></div>'+
@@ -6409,51 +6411,50 @@ function kitBoard(api,run){
   const fitKit=()=>{const el=api.stage.querySelector('.kit.copy');if(!el||!el.isConnected){removeEventListener('resize',fitKit);return;}
     el.style.setProperty('--kitH',Math.max(230,Math.floor(innerHeight-el.getBoundingClientRect().top-16))+'px');};
   if(!free){addEventListener('resize',fitKit);requestAnimationFrame(fitKit);setTimeout(fitKit,300);setTimeout(fitKit,900);}
-  const draw=()=>{$('#kitStage').innerHTML=kitSVG(k,true);const v=$('#kView');if(v){v.textContent=k.view==='back'?T('Back','Cefn'):T('Front','Blaen');v.classList.toggle('back',k.view==='back');}};draw();
+  const draw=()=>{$('#kitStage').innerHTML=kitSVG(K(),true);const v=$('#kView');if(v){v.textContent=side==='back'?T('Back','Cefn'):T('Front','Blaen');v.classList.toggle('back',side==='back');}};draw();
   let frontDone=false;
   {const kb=api.stage.querySelector('.kr-back');if(kb)kb.addEventListener('click',()=>{const x=document.querySelector('#zExit');if(x)x.click();});}
   function check(){
     if(free||won)return;
-    let ok=['body','sleeveL','sleeveR','shorts','sockL','sockR'].every(p=>k[p]===target[p]); /* the whole kit has to be the same, every part */
-    if(ok&&target.pattern!=='plain')ok=k.stripes===target.stripes;
-    if(ok&&target.spots)ok=k.spots.length===target.spots.length&&k.spots.every(d=>d.c===target.spotC);
+    const same=o=>['body','sleeveL','sleeveR','shorts','sockL','sockR'].every(p=>o[p]===target[p]) /* the whole kit has to be the same, every part */
+      &&(target.pattern==='plain'||o.stripes===target.stripes)&&(!target.spots||o.spots.length===target.spots.length&&o.spots.every((d,ii)=>d.c===target.spots[ii].c));
+    let ok=same(k);
     /* front first: once the front matches, spin the kit round so they can do the back */
     if(ok&&target.num!=null&&!frontDone){frontDone=true;api.sfx.cheer();api.coach(T('Front done! Now do the back.','Blaen yn barod! Nawr gwna\'r cefn.'));
       const ks=$('#kitStage');ks.classList.add('spin');
-      api.later(()=>{k.view='back';draw();},350);api.later(()=>{ks.classList.remove('spin');const np=$('#kNumP'),tb=$('#kTurn');if(np)np.hidden=false;if(tb)tb.hidden=false;
-        api.coach(T('Type the number for the back, then colour it in.',"Teipia'r rhif i'r cefn, wedyn lliwia fe."));},750);return;}
-    if(ok&&target.num!=null)ok=k.num===target.num&&k.number===target.number;
-    if(ok){won=true;const t2=$('#kitTgt');if(t2)t2.classList.remove('gone');api.good(T('Perfect copy!','Copi perffaith! Am git!'));if(run)run.done();else api.later(()=>api.finish({text:T('You copied the kit exactly!','Copïaist ti\'r cit yn union!'),art:kitSVG(k,false)}),1700);}
+      api.later(()=>{side='back';draw();},350);api.later(()=>{ks.classList.remove('spin');const np=$('#kNumP'),tb=$('#kTurn');if(np)np.hidden=false;if(tb)tb.hidden=false;
+        api.coach(T('Now paint the back, then add the number.',"Nawr paentia'r cefn, wedyn rho'r rhif."));},750);return;}
+    if(ok&&target.num!=null)ok=same(kb)&&kb.num===target.num&&kb.number===target.number;
+    if(ok){won=true;const t2=$('#kitTgt');if(t2)t2.classList.remove('gone');api.good(T('Well done!','Da iawn!'));if(run)run.done();else api.later(()=>api.finish({text:T('You copied the kit exactly!','Copïaist ti\'r cit yn union!'),art:kitSVG(k,false)}),1700);}
   }
   const spotN=()=>{const b=$('#kSpotN');if(b)b.textContent=k.spots.length;};
   $('#kitStage').addEventListener('click',e=>{
     const sp=e.target.closest('[data-spot]');
-    if(sp){const i=+sp.dataset.spot;if(mode==='spot')k.spots.splice(i,1);else k.spots[i].c=brush;draw();spotN();api.sfx.pop(2);check();return;}
+    if(sp){const i=+sp.dataset.spot;K().spots[i].c=brush;draw();api.sfx.pop(2);check();return;}
     const tg=e.target.closest('[data-r]');if(!tg)return;const rg=tg.dataset.r;if(rg==='collar')return;
     if(mode==='spot'&&(rg==='body'||rg==='stripes')){
       if(k.spots.length>=12){api.coach(T('That\'s lots of spots!','Dyna lot o smotiau!'));return;}
       const svg=$('#kitStage svg'),pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());
       k.spots.push({x:Math.round(q.x),y:Math.round(q.y),c:brush});draw();spotN();api.sfx.pop(3);check();return;}
-    k[rg]=brush;draw();api.sfx.pop(3);taps++;if(free&&taps===4){api.coach(t('kd_great'));api.say(t('kd_great'));}check();});
+    K()[rg]=brush;draw();api.sfx.pop(3);taps++;if(free&&taps===4){api.coach(t('kd_great'));api.say(t('kd_great'));}check();});
   $$('.swatch',api.stage).forEach(b=>b.addEventListener('click',()=>{brush=b.dataset.c;$$('.swatch',api.stage).forEach(x=>x.setAttribute('aria-pressed',x===b));api.sfx.pop(1);api.say(NAMES[brush]);api.coach(t('kd_now',{c:cap(NAMES[brush])}));}));
   $$('#pat button',api.stage).forEach(b=>b.addEventListener('click',()=>{k.pattern=b.dataset.p;$$('#pat button',api.stage).forEach(x=>x.setAttribute('aria-pressed',x===b));draw();api.sfx.pop(2);check();}));
   const setN=n=>{k.num=Math.max(1,Math.min(99,n));$('#nVal').textContent=k.num;draw();api.sfx.pop(1);api.say(String(k.num));check();};
   {const b=$('#kSpot');if(b)b.addEventListener('click',()=>{mode=mode==='spot'?'paint':'spot';b.setAttribute('aria-pressed',mode==='spot');api.sfx.pop(1);
     api.coach(mode==='spot'?T('Tap the shirt to add a spot. Tap a spot to take it off.','Tapia\'r crys i ychwanegu smotyn. Tapia smotyn i\'w dynnu.'):T('Tap the kit to paint it.',"Tapia'r cit i'w beintio."));});}
-  $$('.kxk',api.stage).forEach(b=>b.addEventListener('click',()=>{const d=b.dataset.d,cur=k.num==null?'':String(k.num);
-    let nx=d==='x'?cur.slice(0,-1):(cur.length>=2?d:cur+d);nx=nx.replace(/^0+(?=\d)/,'');k.num=nx===''?null:+nx;
-    $('#kNumV').textContent=k.num==null?'–':k.num;k.view='back';draw();api.sfx.pop(1);if(k.num!=null)api.say(String(k.num));check();}));
-  {const tb=$('#kTurn');if(tb)tb.addEventListener('click',()=>{k.view=k.view==='back'?'front':'back';draw();api.sfx.pop(2);});}
+  $$('.kxk',api.stage).forEach(b=>b.addEventListener('click',()=>{const d=b.dataset.d,cur=kb.num==null?'':String(kb.num);
+    let nx=d==='x'?cur.slice(0,-1):(cur.length>=2?d:cur+d);nx=nx.replace(/^0+(?=\d)/,'');kb.num=nx===''?null:+nx;
+    $('#kNumV').textContent=kb.num==null?'–':kb.num;side='back';draw();api.sfx.pop(1);if(kb.num!=null)api.say(String(kb.num));check();}));
+  {const tb=$('#kTurn');if(tb)tb.addEventListener('click',()=>{side=side==='back'?'front':'back';draw();api.sfx.pop(2);});}
   if(free){
     $('#kitClub').addEventListener('click',()=>{Object.assign(k,{sleeveL:'',sleeveR:'',sockL:'',sockR:'',body:'#2a3125',sleeves:'#8fd14f',collar:'#8fd14f',shorts:'#2a3125',socks:'#8fd14f',number:'#8fd14f',stripes:'#8fd14f'});draw();api.good(t('kd_clubsay'));});
     $('#kitRandom').addEventListener('click',()=>{const p=()=>PAL[R(PAL.length)];['body','sleeves','collar','shorts','socks','stripes'].forEach(x=>k[x]=p());k.sleeveL=k.sleeveR=k.sockL=k.sockR='';k.number=k.body==='#ffffff'||k.body==='#ffd23f'?'#2a3125':'#ffffff';k.pattern=['plain','stripes','hoops'][R(3)];$$('#pat button',api.stage).forEach(x=>x.setAttribute('aria-pressed',x.dataset.p===k.pattern));draw();api.sfx.cheer();api.coach(t('kd_tada'));});
     $('#kitDone').addEventListener('click',()=>api.finish({title:t('kd_title'),text:t('kd_res',{n:k.num}),art:kitSVG(k,false)}));
   }
-  if(hideAfter){const hide=()=>{const t2=$('#kitTgt');if(t2&&!won){t2.classList.add('gone');$('#kitPeek').hidden=false;}};api.later(hide,hideAfter*1000);
-    $('#kitPeek').addEventListener('click',()=>{const t2=$('#kitTgt');if(!t2)return;t2.classList.remove('gone');api.later(hide,2000);});}
+  if(hideAfter){const hide=()=>{const t2=$('#kitTgt');if(t2&&!won)t2.classList.add('gone');};api.later(hide,hideAfter*1000);}
   /* expose the target for automated testing */
   if(target)api.stage.dataset.target=JSON.stringify({parts,target});
-  const xtra=target&&target.spots?T('Count the spots and add the same on your shirt!',"Cyfra'r smotiau a rho'r un nifer ar dy grys!"):target&&target.num!=null?T('Don\'t forget the number on the back!',"Paid ag anghofio'r rhif ar y cefn!"):target&&target.pattern!=='plain'?T('Paint the stripes too!',"Paentia'r streipiau hefyd!"):'';
+  const xtra=target&&target.spots?T('Paint the spots on your shirt too!',"Paentia'r smotiau ar dy grys hefyd!"):target&&target.num!=null?T('Don\'t forget the number on the back!',"Paid ag anghofio'r rhif ar y cefn!"):target&&target.pattern!=='plain'?T('Paint the stripes too!',"Paentia'r streipiau hefyd!"):'';
   api.coach(free?t('kd_coach'):(xtra||T('Copy the coach\'s kit','Copïa git yr hyfforddwr')));api.say(free?t('kd_say'):T('Make your kit look the same as the coach\'s kit.','Gwna i dy git di edrych yr un fath â chit yr hyfforddwr.'),true);
 }
 
