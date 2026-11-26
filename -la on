@@ -1,0 +1,111 @@
+[1mdiff --git a/ios/App/App/Info.plist b/ios/App/App/Info.plist[m
+[1mindex ed7c41d..29a6000 100644[m
+[1m--- a/ios/App/App/Info.plist[m
+[1m+++ b/ios/App/App/Info.plist[m
+[36m@@ -2,12 +2,12 @@[m
+ <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">[m
+ <plist version="1.0">[m
+ <dict>[m
+[31m-  <key>CAPACITOR_DEBUG</key>[m
+[32m+[m	[32m<key>CAPACITOR_DEBUG</key>[m
+ 	<string>$(CAPACITOR_DEBUG)</string>[m
+ 	<key>CFBundleDevelopmentRegion</key>[m
+ 	<string>en</string>[m
+ 	<key>CFBundleDisplayName</key>[m
+[31m-        <string>Criw Cicio</string>[m
+[32m+[m	[32m<string>Criw Cicio</string>[m
+ 	<key>CFBundleExecutable</key>[m
+ 	<string>$(EXECUTABLE_NAME)</string>[m
+ 	<key>CFBundleIdentifier</key>[m
+[36m@@ -22,28 +22,28 @@[m
+ 	<string>$(MARKETING_VERSION)</string>[m
+ 	<key>CFBundleVersion</key>[m
+ 	<string>$(CURRENT_PROJECT_VERSION)</string>[m
+[31m-        <key>NSCameraUsageDescription</key>[m
+[31m-        <string>The camera is used only when a grown-up chooses to record children playing the physical games.</string>[m
+[32m+[m	[32m<key>NSCameraUsageDescription</key>[m
+[32m+[m	[32m<string>The camera is used only when a grown-up chooses to record children playing the physical games.</string>[m
+ 	<key>LSRequiresIPhoneOS</key>[m
+ 	<true/>[m
+ 	<key>UIApplicationSceneManifest</key>[m
+ 	<dict>[m
+ 		<key>UIApplicationSupportsMultipleScenes</key>[m
+[31m-    <false/>[m
+[31m-    <key>UISceneConfigurations</key>[m
+[31m-    <dict>[m
+[31m-      <key>UIWindowSceneSessionRoleApplication</key>[m
+[31m-      <array>[m
+[31m-        <dict>[m
+[31m-            <key>UISceneConfigurationName</key>[m
+[31m-            <string>Default Configuration</string>[m
+[31m-            <key>UISceneDelegateClassName</key>[m
+[31m-            <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>[m
+[31m-            <key>UISceneStoryboardFile</key>[m
+[31m-            <string>Main</string>[m
+[31m-        </dict>[m
+[31m-      </array>[m
+[31m-    </dict>[m
+[32m+[m		[32m<false/>[m
+[32m+[m		[32m<key>UISceneConfigurations</key>[m
+[32m+[m		[32m<dict>[m
+[32m+[m			[32m<key>UIWindowSceneSessionRoleApplication</key>[m
+[32m+[m			[32m<array>[m
+[32m+[m				[32m<dict>[m
+[32m+[m					[32m<key>UISceneConfigurationName</key>[m
+[32m+[m					[32m<string>Default Configuration</string>[m
+[32m+[m					[32m<key>UISceneDelegateClassName</key>[m
+[32m+[m					[32m<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>[m
+[32m+[m					[32m<key>UISceneStoryboardFile</key>[m
+[32m+[m					[32m<string>Main</string>[m
+[32m+[m				[32m</dict>[m
+[32m+[m			[32m</array>[m
+[32m+[m		[32m</dict>[m
+ 	</dict>[m
+ 	<key>UILaunchStoryboardName</key>[m
+ 	<string>LaunchScreen</string>[m
+[36m@@ -68,5 +68,9 @@[m
+ 	</array>[m
+ 	<key>UIViewControllerBasedStatusBarAppearance</key>[m
+ 	<true/>[m
+[32m+[m	[32m<key>NSPhotoLibraryAddUsageDescription</key>[m
+[32m+[m	[32m<string>Criw Cicio saves finished videos to your Photos library when a grown-up chooses to save them.</string>[m
+[32m+[m	[32m<key>NSPhotoLibraryUsageDescription</key>[m
+[32m+[m	[32m<string>Criw Cicio uses your Photos library only to save finished videos when requested.</string>[m
+ </dict>[m
+ </plist>[m
+[1mdiff --git a/ios/App/CapApp-SPM/Package.swift b/ios/App/CapApp-SPM/Package.swift[m
+[1mindex 97f572a..9393509 100644[m
+[1m--- a/ios/App/CapApp-SPM/Package.swift[m
+[1m+++ b/ios/App/CapApp-SPM/Package.swift[m
+[36m@@ -12,6 +12,8 @@[m [mlet package = Package([m
+     ],[m
+     dependencies: [[m
+         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.6.2"),[m
+[32m+[m[32m        .package(name: "CapacitorCommunityMedia", path: "../../../node_modules/@capacitor-community/media"),[m
+[32m+[m[32m        .package(name: "CapacitorFilesystem", path: "../../../node_modules/@capacitor/filesystem"),[m
+         .package(name: "CordovaPluginPurchase", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginPurchase")[m
+     ],[m
+     targets: [[m
+[36m@@ -20,6 +22,8 @@[m [mlet package = Package([m
+             dependencies: [[m
+                 .product(name: "Capacitor", package: "capacitor-swift-pm"),[m
+                 .product(name: "Cordova", package: "capacitor-swift-pm"),[m
+[32m+[m[32m                .product(name: "CapacitorCommunityMedia", package: "CapacitorCommunityMedia"),[m
+[32m+[m[32m                .product(name: "CapacitorFilesystem", package: "CapacitorFilesystem"),[m
+                 .product(name: "CordovaPluginPurchase", package: "CordovaPluginPurchase")[m
+             ][m
+         )[m
+[1mdiff --git a/package.json b/package.json[m
+[1mindex 5be75f7..27a13ca 100644[m
+[1m--- a/package.json[m
+[1m+++ b/package.json[m
+[36m@@ -19,7 +19,9 @@[m
+   },[m
+   "homepage": "https://github.com/criwcicio-cell/my-iphone-app#readme",[m
+   "dependencies": {[m
+[32m+[m[32m    "@capacitor-community/media": "^9.1.0",[m
+     "@capacitor/core": "^8.6.2",[m
+[32m+[m[32m    "@capacitor/filesystem": "^8.1.5",[m
+     "@capacitor/ios": "^8.6.2",[m
+     "cordova-plugin-purchase": "^13.20.0"[m
+   },[m
